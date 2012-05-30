@@ -224,12 +224,15 @@ public class DummyTransaction implements Transaction {
    public boolean notifyBeforeCompletion() {
       boolean retval = true;
       if (syncs == null) return true;
-      for (Synchronization s : syncs) {
+      for (Synchronization s : syncs) {  //todo [anistor] if an exception is raised by a Synchronization we should probably stop invoking the remaining ones. this is still unclear in JTA spec
          if (trace) log.tracef("processing beforeCompletion for %s", s);
          try {
             s.beforeCompletion();
-         } catch (Throwable t) {
+         } catch (Throwable t) {  //todo [anistor] this seems wrong as per JTA spec only runtime exceptions should cause a rollback
             retval = false;
+            if (t instanceof RuntimeException) {
+               status = Status.STATUS_MARKED_ROLLBACK;
+            }
             log.beforeCompletionFailed(s, t);
          }
       }
@@ -261,6 +264,11 @@ public class DummyTransaction implements Transaction {
             throw new SystemException(th.getMessage());
          }
       }
+
+      if (status == Status.STATUS_MARKED_ROLLBACK || status == Status.STATUS_ROLLING_BACK) {
+         return false;
+      }
+
       status = Status.STATUS_PREPARED;
       return true;
    }
