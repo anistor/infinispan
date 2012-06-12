@@ -23,11 +23,16 @@
 package org.infinispan.atomic;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.VersioningScheme;
+import org.infinispan.context.InvocationContext;
+import org.infinispan.context.InvocationContextContainer;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.AbstractInfinispanTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
+import org.infinispan.transaction.LockingMode;
+import org.infinispan.util.concurrent.IsolationLevel;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.testng.annotations.AfterMethod;
@@ -42,20 +47,39 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.infinispan.context.Flag.SKIP_LOCKING;
+import static org.testng.AssertJUnit.*;
+
+
 @Test(groups = "functional", testName = "atomic.AtomicMapFunctionalTest")
 public class AtomicMapFunctionalTest extends AbstractInfinispanTest {
    private static final Log log = LogFactory.getLog(AtomicMapFunctionalTest.class);
-   Cache<String, Object> cache;
-   TransactionManager tm;
+   private Cache<String, Object> cache;
+   private TransactionManager tm;
    private EmbeddedCacheManager cm;
 
    @BeforeMethod
-   @SuppressWarnings("unchecked")
    public void setUp() {
-      Configuration c = new Configuration();
-      // these 2 need to be set to use the AtomicMapCache
-      c.setInvocationBatchingEnabled(true);
-      cm = TestCacheManagerFactory.createCacheManager(c);
+      ConfigurationBuilder cb = new ConfigurationBuilder();
+      cb.clustering().invocationBatching().enable();
+
+      cb = new ConfigurationBuilder();
+      cb.clustering().invocationBatching().enable()
+            .versioning().enable().scheme(VersioningScheme.SIMPLE)
+            .locking().lockAcquisitionTimeout(200).writeSkewCheck(true).isolationLevel(IsolationLevel.REPEATABLE_READ);
+
+      cb = new ConfigurationBuilder();
+      cb.clustering().invocationBatching().enable()
+            .transaction().lockingMode(LockingMode.PESSIMISTIC)
+            .locking().lockAcquisitionTimeout(200)
+            .isolationLevel(IsolationLevel.REPEATABLE_READ)
+            .build();
+
+      cm = TestCacheManagerFactory.createCacheManager(cb);
+
       cache = cm.getCache();
       tm = TestingUtil.getTransactionManager(cache);
    }
@@ -145,18 +169,221 @@ public class AtomicMapFunctionalTest extends AbstractInfinispanTest {
       assert AtomicMapLookup.getAtomicMap(cache, "key").get("a").equals("b");
    }
 
-   @Test(expectedExceptions = IllegalStateException.class)
    public void testRemovalOfAtomicMap() throws SystemException, NotSupportedException, RollbackException, HeuristicRollbackException, HeuristicMixedException {
       AtomicMap<String, String> map = AtomicMapLookup.getAtomicMap(cache, "key");
       map.put("hello", "world");
+
       TransactionManager tm = cache.getAdvancedCache().getTransactionManager();
       tm.begin();
+
       map = AtomicMapLookup.getAtomicMap(cache, "key");
       map.put("hello2", "world2");
-      assert map.size() == 2;
+      assertEquals(2, map.size());
       AtomicMapLookup.removeAtomicMap(cache, "key");
-      map.size();
+      assertFalse(cache.containsKey("key"));
+
+      // check if map is valid before commit
+      try {
+         map.size(); // this must fail, map is stale
+
+         fail("Stale AtomicMap reference was not detected.");
+      } catch (IllegalStateException e) {
+         assertTrue(e.getMessage().contains("key has been concurrently removed"));
+      }
+
       tm.commit();
 
+      // check if map is valid after commit
+      try {
+         map.size(); // this must fail
+
+         fail("Stale AtomicMap reference was not detected.");
+      } catch (IllegalStateException e) {
+         assertTrue(e.getMessage().contains("key has been concurrently removed"));
+      }
+
+      // this should re-create an empty map
+      AtomicMap<String, String> map2 = AtomicMapLookup.getAtomicMap(cache, "key");
+      assertTrue(map2.isEmpty());
+   }
+
+   public void testConcurrentRemovalOfAtomicMap() throws InterruptedException {
+      final AtomicMap<String, String> map0 = AtomicMapLookup.getAtomicMap(cache, "key");
+      map0.put("k1", "v1");
+      map0.put("k2", "v2");
+
+      final AtomicInteger rolledBack = new AtomicInteger();
+      final CountDownLatch latch1 = new CountDownLatch(1);
+      final CountDownLatch latch2 = new CountDownLatch(1);
+      final CountDownLatch latch3 = new CountDownLatch(1);
+
+      Thread t1 = new Thread(new Runnable() {
+         public void run() {
+            try {
+               latch1.await();
+
+               tm.begin();
+               try {
+                  AtomicMap<String, String> map1 = AtomicMapLookup.getAtomicMap(cache, "key");
+                  assertEquals(2, map1.size());
+                  assertEquals("v1", map1.get("k1"));
+                  assertEquals("v2", map1.get("k2"));
+                  latch2.countDown();
+                  latch3.await();
+                  assertEquals(2, map1.size());
+                  map1.put("k3","v3");
+                  tm.commit();
+               } catch (Exception e) {
+                  if (e instanceof RollbackException) {
+                     rolledBack.incrementAndGet();
+                  }
+
+                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
+                  if (tm.getTransaction() != null) {
+                     try {
+                        tm.rollback();
+                        rolledBack.incrementAndGet();
+                     } catch (SystemException e1) {
+                        log.error("Failed to rollback", e1);
+                     }
+                  }
+                  throw e;
+               }
+            } catch (Exception ex) {
+               ex.printStackTrace();
+            }
+         }
+      }, "NodeMoveAPITest.Remover-1");
+
+      Thread t2 = new Thread(new Runnable() {
+         public void run() {
+            try {
+               latch2.await();
+
+               tm.begin();
+               try {
+                  AtomicMap<String, String> map2 = AtomicMapLookup.getAtomicMap(cache, "key");
+                  assertEquals(2, map2.size());
+                  AtomicMapLookup.removeAtomicMap(cache, "key");
+                  tm.commit();
+                  latch3.countDown();
+               } catch (Exception e) {
+                  if (e instanceof RollbackException) {
+                     rolledBack.incrementAndGet();
+                  }
+
+                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
+                  if (tm.getTransaction() != null) {
+                     try {
+                        tm.rollback();
+                        rolledBack.incrementAndGet();
+                     } catch (SystemException e1) {
+                        log.error("Failed to rollback", e1);
+                     }
+                  }
+                  throw e;
+               }
+            } catch (Exception ex) {
+               ex.printStackTrace();
+            }
+         }
+      }, "NodeMoveAPITest.Remover-2");
+
+      t1.start();
+      t2.start();
+      latch1.countDown();
+      t1.join();
+      t2.join();
+
+      assertFalse(cache.containsKey("key"));
+      assertEquals(0, rolledBack.get());
+   }
+
+   public void testConcurrentRemoveAndUpdateOfAtomicMap() throws InterruptedException {
+      final AtomicMap<String, String> map0 = AtomicMapLookup.getAtomicMap(cache, "key");
+      map0.put("k1", "v1");
+      map0.put("k2", "v2");
+
+      final AtomicInteger rolledBack = new AtomicInteger();
+      final CountDownLatch latch1 = new CountDownLatch(1);
+      final CountDownLatch latch2 = new CountDownLatch(1);
+      final CountDownLatch latch3 = new CountDownLatch(1);
+
+      Thread t1 = new Thread(new Runnable() {
+         public void run() {
+            try {
+               latch1.await();
+
+               tm.begin();
+               try {
+                  AtomicMap<String, String> map1 = AtomicMapLookup.getAtomicMap(cache, "key");
+                  assertEquals(2, map1.size());
+                  assertEquals("v1", map1.get("k1"));
+                  assertEquals("v2", map1.get("k2"));
+                  latch2.countDown();
+                  latch3.await();
+                  assertEquals(2, map1.size());
+                  tm.commit();
+               } catch (Exception e) {
+                  if (e instanceof RollbackException) {
+                     rolledBack.incrementAndGet();
+                  }
+
+                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
+                  if (tm.getTransaction() != null) {
+                     try {
+                        tm.rollback();
+                        rolledBack.incrementAndGet();
+                     } catch (SystemException e1) {
+                        log.error("Failed to rollback", e1);
+                     }
+                  }
+                  throw e;
+               }
+            } catch (Exception ex) {
+               ex.printStackTrace();
+            }
+         }
+      }, "NodeMoveAPITest.Remover-1");
+
+      Thread t2 = new Thread(new Runnable() {
+         public void run() {
+            try {
+               latch2.await();
+
+               tm.begin();
+               try {
+                  AtomicMap<String, String> map2 = AtomicMapLookup.getAtomicMap(cache, "key");
+                  assertEquals(2, map2.size());
+                  AtomicMapLookup.removeAtomicMap(cache, "key");
+                  tm.commit();
+                  latch3.countDown();
+               } catch (Exception e) {
+                  if (e instanceof RollbackException) {
+                     rolledBack.incrementAndGet();
+                  }
+
+                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
+                  if (tm.getTransaction() != null) {
+                     try {
+                        tm.rollback();
+                        rolledBack.incrementAndGet();
+                     } catch (SystemException e1) {
+                        log.error("Failed to rollback", e1);
+                     }
+                  }
+                  throw e;
+               }
+            } catch (Exception ex) {
+               ex.printStackTrace();
+            }
+         }
+      }, "NodeMoveAPITest.Remover-2");
+
+      t1.start();
+      t2.start();
+      latch1.countDown();
+      t1.join();
+      t2.join();
    }
 }

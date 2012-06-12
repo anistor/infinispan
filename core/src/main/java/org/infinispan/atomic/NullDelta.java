@@ -22,8 +22,6 @@
  */
 package org.infinispan.atomic;
 
-import org.infinispan.atomic.AtomicHashMap;
-
 /**
  * Represents no changes.
  *

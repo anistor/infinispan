@@ -43,7 +43,7 @@ import org.infinispan.atomic.AtomicMapLookup;
  * <br />
  * <b><u>2.  Fine-grained serialization of deltas</u></b>
  * <p>
- * AtomicMap implementations also implement the {@link DeltaAware} interface.  This powerful interface allows the
+ * FineGrainedAtomicMap implementations also implement the {@link DeltaAware} interface.  This powerful interface allows the
  * generation and application of deltas, and requires that implementations are capable of tracking changes made to it
  * during the course of a transaction.  This helps since when performing replications to update remote nodes, the
  * <i>entire</i> map need not be serialized and transported all the time, as serializing and transporting {@link Delta}
@@ -54,21 +54,21 @@ import org.infinispan.atomic.AtomicMapLookup;
  * <b><u>Usage</u></b>
  * <p>
  * FineGrainedAtomicMap should be constructed and "registered" with Infinispan using the {@link AtomicMapLookup} helper.  This
- * helper ensures thread safe construction and registration of AtomicMap instances in Infinispan's data container.  E.g.:
+ * helper ensures thread safe construction and registration of FineGrainedAtomicMap instances in Infinispan's data container.  E.g.:
  * <br />
  * <code>
  *    FineGrainedAtomicMap&lt;String, Integer&gt; map = AtomicMapLookup.getFineGrainedAtomicMap(cache, "my_atomic_map_key");
  * </code>
  * </p>
  * <p><b><u>Referential Integrity</u></b><br />
- * It is important to note that concurrent readers of an AtomicMap will essentially have the same view of the contents
- * of the underlying structure, but since AtomicMaps use internal proxies, readers are isolated from concurrent writes
+ * It is important to note that concurrent readers of a FineGrainedAtomicMap will essentially have the same view of the contents
+ * of the underlying structure, but since FineGrainedAtomicMaps use internal proxies, readers are isolated from concurrent writes
  * and {@link IsolationLevel#READ_COMMITTED} and {@link IsolationLevel#REPEATABLE_READ} semantics are guaranteed.
- * However, this guarantee is only present if the values stored in an AtomicMap are <i>immutable</i> (e.g., Strings,
+ * However, this guarantee is only present if the values stored in an FineGrainedAtomicMap are <i>immutable</i> (e.g., Strings,
  * primitives, and other immutable types).</p>
  *
- * <p>Mutable value objects which happen to be stored in an AtomicMap may be updated and, prior to being committed,
- * or even replaced in the map, be visible to concurrent readers.  Hence, AtomicMaps are <b><i>not suitable</i></b> for
+ * <p>Mutable value objects which happen to be stored in an FineGrainedAtomicMap may be updated and, prior to being committed,
+ * or even replaced in the map, be visible to concurrent readers.  Hence, FineGrainedAtomicMaps are <b><i>not suitable</i></b> for
  * use with mutable value objects.</p>
  * </p>
  * <br />
