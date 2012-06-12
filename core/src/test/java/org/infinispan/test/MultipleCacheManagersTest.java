@@ -71,7 +71,7 @@ import static org.testng.Assert.assertTrue;
  * <p/>
  * </pre>
  * <p/>
- * Note that this will cuse {@link #createCacheManagers()}  to be called befpre each method.
+ * Note that this will cause {@link #createCacheManagers()}  to be called befpre each method.
  *
  * @author Mircea.Markus@jboss.com
  */

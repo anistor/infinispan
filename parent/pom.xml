@@ -170,7 +170,7 @@
       <version.solder>3.1.0.Final</version.solder>
       <version.spring>3.1.0.RELEASE</version.spring>
       <version.spymemcached>2.5</version.spymemcached>
-      <version.testng>6.7</version.testng>
+      <version.testng>6.7</version.testng>  <!-- versions higher than 6.0 are incompatible with Intellij IDEA so we should stick to 6.0 -->
       <version.webdav.servlet>2.0.1</version.webdav.servlet>
       <version.weld>1.1.8.Final</version.weld>
       <version.xsom>20081112</version.xsom>
@@ -1563,7 +1563,6 @@
                         <id>attach-sources</id>
                         <goals>
                            <goal>jar</goal>
-                           <goal>test-jar</goal>
                         </goals>
                      </execution>
                   </executions>

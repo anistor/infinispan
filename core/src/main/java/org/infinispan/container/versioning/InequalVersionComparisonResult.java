@@ -37,7 +37,7 @@ public enum InequalVersionComparisonResult {
     */
    AFTER,
    /**
-    * Denotes that the two versions being comapred are equal.
+    * Denotes that the two versions being compared are equal.
     */
    EQUAL,
    /**

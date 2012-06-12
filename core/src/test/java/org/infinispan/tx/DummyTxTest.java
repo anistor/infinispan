@@ -29,6 +29,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.test.SingleCacheManagerTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.TestCacheManagerFactory;
+import org.infinispan.transaction.LockingMode;
 import org.infinispan.util.concurrent.IsolationLevel;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
@@ -41,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * Tests DummyTransactionManager commit issues when prepare fails.
@@ -60,6 +62,13 @@ public class DummyTxTest extends SingleCacheManagerTest {
       cb.clustering().invocationBatching().enable()
             .versioning().enable().scheme(VersioningScheme.SIMPLE)
             .locking().lockAcquisitionTimeout(200).writeSkewCheck(true).isolationLevel(IsolationLevel.REPEATABLE_READ);
+
+//      cb = new ConfigurationBuilder();
+//      cb.clustering().invocationBatching().enable()
+//            .transaction().lockingMode(LockingMode.PESSIMISTIC)
+//            .locking().lockAcquisitionTimeout(1000l)
+//            .isolationLevel(IsolationLevel.REPEATABLE_READ)
+//            .build();
 
       cm.defineConfiguration("test", cb.build());
       cache = cm.getCache("test");
@@ -109,8 +118,7 @@ public class DummyTxTest extends SingleCacheManagerTest {
 
                      if (success) {
                         removed.incrementAndGet();
-                     }
-                     else {
+                     } else {
                         didNothing.incrementAndGet();
                      }
                   } catch (Throwable e) {
@@ -147,5 +155,165 @@ public class DummyTxTest extends SingleCacheManagerTest {
       assertFalse(cache.containsKey("k1"));
       assertEquals(1, removed.get());
       assertEquals(numThreads - 1, rolledBack.get() + didNothing.get());
+   }
+
+   public void testConcurrentPut() throws Exception {
+      // multiple threads will try to put "k1" and commit. we expect only one to succeed
+
+      final int numThreads = 5;
+      final AtomicInteger rolledBack = new AtomicInteger();
+      final AtomicInteger putters = new AtomicInteger();
+
+      final CountDownLatch latch = new CountDownLatch(1);
+      Thread[] threads = new Thread[numThreads];
+      for (int i = 0; i < numThreads; i++) {
+         threads[i] = new Thread("DummyTxTest.Thread-" + i) {
+            public void run() {
+               try {
+                  latch.await();
+
+                  tm().begin();
+                  try {
+                     cache.get("k1");
+                     cache.put("k1", getName());
+                     cache.put(getName(), getName());
+                     TestingUtil.sleepRandom(200);
+                     tm().commit();
+                     putters.incrementAndGet();
+                  } catch (Throwable e) {
+                     if (e instanceof RollbackException) {
+                        rolledBack.incrementAndGet();
+                     } else if (tm().getTransaction() != null) {
+                        // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
+                        try {
+                           tm().rollback();
+                           rolledBack.incrementAndGet();
+                        } catch (SystemException e1) {
+                           log.error("Failed to rollback", e1);
+                        }
+                     }
+                     throw e;
+                  }
+               } catch (Throwable e) {
+                  log.error(e);
+               }
+            }
+         };
+         threads[i].start();
+      }
+
+      latch.countDown();
+      for (Thread t : threads) {
+         t.join();
+      }
+
+      log.trace("putters= " + putters.get());
+      log.trace("rolledBack= " + rolledBack.get());
+
+      assertTrue(cache.containsKey("k1"));
+      assertEquals(1, putters.get());
+      assertEquals(numThreads - 1, rolledBack.get());
+   }
+
+   public void testConcurrentPut2() throws InterruptedException {
+      final AtomicInteger successes = new AtomicInteger();
+      final AtomicInteger rollbacks = new AtomicInteger();
+
+      final CountDownLatch latch1 = new CountDownLatch(1);
+      final CountDownLatch latch2 = new CountDownLatch(1);
+      final CountDownLatch latch3 = new CountDownLatch(1);
+
+      Thread t1 = new Thread(new Runnable() {
+         public void run() {
+            try {
+               latch1.await();
+
+               tm().begin();
+               try {
+                  try {
+                     cache.get("k1");
+                     cache.put("k1", "v1");
+
+                     // this second put() is needed to avoid optimizations done by OptimisticLockingInterceptor
+                     // for single modification transactions and force it reach the code path that triggers ISPN-20xx
+                     cache.put("k2", "thread 1");
+                  } finally {
+                     latch2.countDown();
+                  }
+                  latch3.await();
+                  tm().commit(); //this is expected to fail
+                  successes.incrementAndGet();
+               } catch (Exception e) {
+                  if (e instanceof RollbackException) {
+                     rollbacks.incrementAndGet();
+                  } else if (tm().getTransaction() != null) {
+                     // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
+                     try {
+                        tm().rollback();
+                        rollbacks.incrementAndGet();
+                     } catch (SystemException e1) {
+                        log.error("Failed to rollback", e1);
+                     }
+                  }
+                  throw e;
+               }
+            } catch (Exception ex) {
+               log.error(ex);
+            }
+         }
+      }, "DummyTxTest.Thread-1");
+
+      Thread t2 = new Thread(new Runnable() {
+         public void run() {
+            try {
+               latch2.await();
+
+               tm().begin();
+               try {
+                  try {
+                     cache.get("k1");
+                     cache.put("k1", "v2");
+
+                     // this second put() is needed to avoid optimizations done by OptimisticLockingInterceptor
+                     // for single modification transactions and force it reach the code path that triggers ISPN-20xx
+                     cache.put("k3", "thread 2");
+                     tm().commit();
+                     successes.incrementAndGet();
+                  } finally {
+                     latch3.countDown();
+                  }
+               } catch (Exception e) {
+                  if (e instanceof RollbackException) {
+                     rollbacks.incrementAndGet();
+                  } else if (tm().getTransaction() != null) {
+                     // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
+                     try {
+                        tm().rollback();
+                        rollbacks.incrementAndGet();
+                     } catch (SystemException e1) {
+                        log.error("Failed to rollback", e1);
+                     }
+                  }
+                  throw e;
+               }
+            } catch (Exception ex) {
+               log.error(ex);
+            }
+         }
+      }, "DummyTxTest.Thread-2");
+
+      t1.start();
+      t2.start();
+      latch1.countDown();
+      t1.join();
+      t2.join();
+
+      log.trace("successes= " + successes.get());
+      log.trace("rollbacks= " + rollbacks.get());
+
+      assertTrue(cache.containsKey("k1"));
+      assertEquals("v2", cache.get("k1"));
+      assertEquals(1, successes.get());
+      assertEquals(1, rollbacks.get());
    }
 }

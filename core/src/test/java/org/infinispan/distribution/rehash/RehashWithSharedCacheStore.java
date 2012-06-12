@@ -43,7 +43,7 @@ import static java.lang.String.format;
  *
  */
 @Test (testName = "distribution.rehash.RehashWithSharedCacheStore", groups = "functional")
-public class RehashWithSharedCacheStore extends BaseDistCacheStoreTest {
+public class RehashWithSharedCacheStore extends BaseDistCacheStoreTest { //todo [anistor] rename to *Test
 
    private static final Log log = LogFactory.getLog(RehashWithSharedCacheStore.class);
 

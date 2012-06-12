@@ -150,7 +150,7 @@ public class CacheImpl<K, V> extends CacheSupport<K, V> implements AdvancedCache
    }
 
    @Inject
-   public void injectDependencies(EvictionManager evictionManager,
+   protected void injectDependencies(EvictionManager evictionManager,
                                   InvocationContextContainer icc,
                                   CommandsFactory commandsFactory,
                                   InterceptorChain interceptorChain,

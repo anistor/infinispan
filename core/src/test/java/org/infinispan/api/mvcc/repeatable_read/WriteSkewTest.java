@@ -60,7 +60,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Test(groups = "functional", testName = "api.mvcc.repeatable_read.WriteSkewTest")
 public class WriteSkewTest extends AbstractInfinispanTest {
@@ -139,8 +139,10 @@ public class WriteSkewTest extends AbstractInfinispanTest {
       setCacheWithWriteSkewCheck();
       postStart();
 
-      final AtomicInteger successes = new AtomicInteger();
-      final AtomicInteger rollbacks = new AtomicInteger();
+      final AtomicBoolean success1 = new AtomicBoolean(false);
+      final AtomicBoolean success2 = new AtomicBoolean(false);
+      final AtomicBoolean rolledBack1 = new AtomicBoolean(false);
+      final AtomicBoolean rolledBack2 = new AtomicBoolean(false);
 
       final CountDownLatch latch1 = new CountDownLatch(1);
       final CountDownLatch latch2 = new CountDownLatch(1);
@@ -162,16 +164,15 @@ public class WriteSkewTest extends AbstractInfinispanTest {
                   }
                   latch3.await();
                   tm.commit(); //this is expected to fail
-                  successes.incrementAndGet();
+                  success1.set(true);
                } catch (Exception e) {
                   if (e instanceof RollbackException) {
-                     rollbacks.incrementAndGet();
-                  }
-
-                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
-                  if (tm.getTransaction() != null) {
+                     rolledBack1.set(true);
+                  } else if (tm.getTransaction() != null) {
+                     // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
                      try {
                         tm.rollback();
+                        rolledBack1.set(true);
                      } catch (SystemException e1) {
                         log.error("Failed to rollback", e1);
                      }
@@ -179,7 +180,7 @@ public class WriteSkewTest extends AbstractInfinispanTest {
                   throw e;
                }
             } catch (Exception ex) {
-               ex.printStackTrace();
+               log.error(ex);
             }
          }
       }, "WriteSkewTest.Thread-1");
@@ -196,19 +197,18 @@ public class WriteSkewTest extends AbstractInfinispanTest {
                      cache.put("k1", "v2");
                      cache.put("k3", "thread 2");
                      tm.commit();
-                     successes.incrementAndGet();
+                     success2.set(true);
                   } finally {
                      latch3.countDown();
                   }
                } catch (Exception e) {
                   if (e instanceof RollbackException) {
-                     rollbacks.incrementAndGet();
-                  }
-
-                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
-                  if (tm.getTransaction() != null) {
+                     rolledBack2.set(true);
+                  } else if (tm.getTransaction() != null) {
+                     // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
                      try {
                         tm.rollback();
+                        rolledBack2.set(true);
                      } catch (SystemException e1) {
                         log.error("Failed to rollback", e1);
                      }
@@ -216,7 +216,7 @@ public class WriteSkewTest extends AbstractInfinispanTest {
                   throw e;
                }
             } catch (Exception ex) {
-               ex.printStackTrace();
+               log.error(ex);
             }
          }
       }, "WriteSkewTest.Thread-2");
@@ -227,13 +227,12 @@ public class WriteSkewTest extends AbstractInfinispanTest {
       t1.join();
       t2.join();
 
-      log.trace("successes= " + successes.get());
-      log.trace("rollbacks= " + rollbacks.get());
-
       Assert.assertTrue(cache.containsKey("k1"));
-      Assert.assertEquals("v2", cache.get("k1"));
-      Assert.assertEquals(1, successes.get());
-      Assert.assertEquals(1, rollbacks.get());
+      Assert.assertEquals(cache.get("k1"), "v2");
+      Assert.assertFalse(success1.get());
+      Assert.assertTrue(rolledBack1.get());
+      Assert.assertTrue(success2.get());
+      Assert.assertFalse(rolledBack2.get());
    }
 
    /**
