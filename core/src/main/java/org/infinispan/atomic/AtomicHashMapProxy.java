@@ -69,8 +69,8 @@ public class AtomicHashMapProxy<K, V> extends AutoBatchSupport implements Atomic
    protected final AdvancedCache<Object, AtomicMap<K, V>> cacheForWriting;
    protected volatile boolean startedReadingMap = false;
    protected final FlagContainer flagContainer;
-   protected TransactionTable transactionTable;
-   protected TransactionManager transactionManager;
+   protected final TransactionTable transactionTable;
+   protected final TransactionManager transactionManager;
 
    AtomicHashMapProxy(AdvancedCache<Object, AtomicMap<K, V>> cache, Object deltaMapKey) {
       this(cache, deltaMapKey, null);
@@ -114,7 +114,7 @@ public class AtomicHashMapProxy<K, V> extends AutoBatchSupport implements Atomic
    /**
     * Looks up the CacheEntry stored in transactional context corresponding to this AtomicMap.  If this AtomicMap
     * has yet to be touched by the current transaction, this method will return a null.
-    * @return
+    * @return the cache entry
     */
    protected CacheEntry lookupEntryFromCurrentTransaction() {
       // Prior to 5.1, this used to happen by grabbing any InvocationContext in ThreadLocal.  Since ThreadLocals
@@ -132,7 +132,6 @@ public class AtomicHashMapProxy<K, V> extends AutoBatchSupport implements Atomic
       }
    }
 
-   @SuppressWarnings("unchecked")
    protected AtomicHashMap<K, V> getDeltaMapForWrite() {
       CacheEntry lookedUpEntry = lookupEntryFromCurrentTransaction();
 
@@ -169,7 +168,9 @@ public class AtomicHashMapProxy<K, V> extends AutoBatchSupport implements Atomic
    // readers
 
    protected void assertValid(AtomicHashMap<?, ?> map) {
-      if (startedReadingMap && (map == null || map.removed)) throw new IllegalStateException("AtomicMap stored under key " + deltaMapKey + " has been concurrently removed!");
+      if (startedReadingMap && (map == null || map.removed)) {
+         throw new IllegalStateException("AtomicMap stored under key " + deltaMapKey + " has been concurrently removed!");
+      }
    }
 
    @Override

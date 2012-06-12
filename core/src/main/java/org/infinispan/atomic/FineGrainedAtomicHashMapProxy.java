@@ -63,7 +63,6 @@ public class FineGrainedAtomicHashMapProxy<K, V> extends AtomicHashMapProxy<K, V
      super((AdvancedCache<Object,AtomicMap<K,V>>) cache, deltaMapKey);
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    protected AtomicHashMap<K, V> getDeltaMapForWrite() {
       CacheEntry lookedUpEntry = lookupEntryFromCurrentTransaction();
@@ -302,9 +301,9 @@ public class FineGrainedAtomicHashMapProxy<K, V> extends AtomicHashMapProxy<K, V
       Collection<?> keys = InfinispanCollections.emptyList();
       if (delta.hasClearOperation()) {
          // if it has clear op we need to lock all keys
-         AtomicHashMap<?, ?> map = (AtomicHashMap<?, ?>) cache.get(deltaMapKey);
+         AtomicMap<K, V> map = cache.get(deltaMapKey);
          if (map != null) {
-            keys = new ArrayList(map.keySet());
+            keys = new ArrayList<K>(map.keySet());
          }
       } else {
          keys = delta.getKeys();
