@@ -327,10 +327,8 @@ public class AtomicMapFunctionalTest extends AbstractInfinispanTest {
                } catch (Exception e) {
                   if (e instanceof RollbackException) {
                      rolledBack.incrementAndGet();
-                  }
-
-                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
-                  if (tm.getTransaction() != null) {
+                  } else if (tm.getTransaction() != null) {
+                     // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
                      try {
                         tm.rollback();
                         rolledBack.incrementAndGet();
@@ -361,10 +359,8 @@ public class AtomicMapFunctionalTest extends AbstractInfinispanTest {
                } catch (Exception e) {
                   if (e instanceof RollbackException) {
                      rolledBack.incrementAndGet();
-                  }
-
-                  // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
-                  if (tm.getTransaction() != null) {
+                  } else if (tm.getTransaction() != null) {
+                     // the TX is most likely rolled back already, but we attempt a rollback just in case it isn't
                      try {
                         tm.rollback();
                         rolledBack.incrementAndGet();
