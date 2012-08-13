@@ -23,7 +23,7 @@
   -->
 <infinispan xmlns="urn:infinispan:config:5.2"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-            xsi:schemaLocation="urn:infinispan:config:5.2 http://docs.jboss.org/infinispan/schemas/infinispan-config-5.2.xsd">
+            xsi:schemaLocation="urn:infinispan:config:5.2 http://www.infinispan.org/schemas/infinispan-config-5.2.xsd">
    <default>
       <eviction maxEntries="1000" />
    </default>

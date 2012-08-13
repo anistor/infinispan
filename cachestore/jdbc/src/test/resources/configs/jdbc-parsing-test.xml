@@ -21,7 +21,10 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
-<infinispan>
+<infinispan
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="urn:infinispan:config:5.2 http://www.infinispan.org/schemas/infinispan-config-5.2.xsd"
+      xmlns="urn:infinispan:config:5.2">
 
    <global>
 
@@ -136,7 +139,8 @@
    <namedCache name="dist">
       <clustering mode="distribution">
          <sync/>
-         <hash numOwners="3" rehashWait="120000"/>
+         <stateTransfer rehashWait="120000"/>
+         <hash numOwners="3"/>
          <l1 enabled="true" lifespan="600000"/>
       </clustering>
    </namedCache>
@@ -203,7 +207,7 @@
       Here we use existing class so we can actually load it
       -->
       <customInterceptors>
-         <interceptor position="FIRST" class="org.infinispan.interceptors.CallInterceptor"></interceptor>
+         <interceptor position="FIRST" class="org.infinispan.interceptors.CallInterceptor"/>
          <interceptor position="LAST" class="org.infinispan.interceptors.CallInterceptor"/>
          <interceptor index="3" class="org.infinispan.interceptors.CallInterceptor"/>
          <interceptor before="org.infinispan.interceptors.CallInterceptor" class="org.infinispan.interceptors.CallInterceptor"/>

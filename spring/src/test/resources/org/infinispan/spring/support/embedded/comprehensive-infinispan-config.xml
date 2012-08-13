@@ -75,7 +75,8 @@
       <invocationBatching enabled="true"/>
       <clustering mode="distribution">
          <sync replTimeout="200000"/>
-         <hash numOwners="2" rehashWait="60000" rehashRpcTimeout="600000"/>
+         <stateTransfer timeout="600000"/>
+         <hash numOwners="2" rehashWait="60000"/>
       </clustering>
    </default>
 
@@ -86,7 +87,8 @@
       <unsafe unreliableReturnValues="true"/>
       <clustering mode="distribution">
          <sync replTimeout="200000"/>
-         <hash numOwners="2" rehashWait="60000" rehashRpcTimeout="600000"/>
+         <stateTransfer timeout="600000"/>
+         <hash numOwners="2" rehashWait="60000"/>
          <l1 enabled="true" lifespan="600000"/>
       </clustering>
    </namedCache>
@@ -95,7 +97,8 @@
       <unsafe unreliableReturnValues="true"/>
       <clustering mode="distribution">
          <sync replTimeout="20000"/>
-         <hash numOwners="2" rehashWait="120000" rehashRpcTimeout="600000"/>
+         <stateTransfer timeout="600000"/>
+         <hash numOwners="2" rehashWait="120000"/>
          <l1 enabled="true" lifespan="600000"/>
       </clustering>
    </namedCache>
@@ -104,7 +107,8 @@
       <unsafe unreliableReturnValues="true"/>
       <clustering mode="distribution">
          <sync replTimeout="20000"/>
-         <hash numOwners="2" rehashWait="60000" rehashRpcTimeout="600000"/>
+         <stateTransfer timeout="600000"/>
+         <hash numOwners="2" rehashWait="60000"/>
          <l1 enabled="true" lifespan="600000"/>
       </clustering>
    </namedCache>
