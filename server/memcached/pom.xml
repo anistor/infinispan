@@ -4,7 +4,7 @@
    <parent>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-server-parent</artifactId>
-      <version>5.1.4.FINAL</version>
+      <version>5.1.4.FINAL-redhat-1</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
@@ -19,17 +19,6 @@
          <artifactId>infinispan-server-core</artifactId>
       </dependency>
 
-      <dependency>
-         <groupId>${project.groupId}</groupId>
-         <artifactId>infinispan-server-core</artifactId>
-         <type>test-jar</type>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>spy</groupId>
-         <artifactId>memcached</artifactId>
-         <scope>test</scope>
-      </dependency>
    </dependencies>
 
    <build>
