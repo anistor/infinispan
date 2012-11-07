@@ -266,36 +266,38 @@ public class StateConsumerImpl implements StateConsumer {
             : InfinispanCollections.<Integer>emptySet();
    }
 
-   public void applyState(Address sender, int topologyId, int segmentId, Collection<InternalCacheEntry> cacheEntries, boolean isLastChunk) {
-      // it's possible to receive a late message so we must be prepared to ignore segments we no longer own
-      //todo [anistor] this check should be based on topologyId
-      if (!cacheTopology.getWriteConsistentHash().getSegmentsForOwner(rpcManager.getAddress()).contains(segmentId)) {
-         if (trace) {
-            log.warnf("Discarding received cache entries for segment %d of cache %s because they do not belong to this node.", segmentId, cacheName);
-         }
-         return;
-      }
-
-      // notify the inbound task that a chunk of cache entries was received
-      InboundTransferTask inboundTransfer;
-      synchronized (this) {
-         inboundTransfer = transfersBySegment.get(segmentId);
-      }
-      if (inboundTransfer != null) {
-         if (cacheEntries != null) {
-            doApplyState(sender, segmentId, cacheEntries);
-         }
-
-         inboundTransfer.onStateReceived(segmentId, isLastChunk);
-
-         if (trace) {
-            log.tracef("After applying the received state the data container of cache %s has %d keys", cacheName, dataContainer.size());
-            synchronized (this) {
-               log.tracef("Segments not received yet for cache %s: %s", cacheName, transfersBySource);
+   public void applyState(Address sender, int topologyId, Collection<StateChunk> stateChunks) {
+      for (StateChunk stateChunk : stateChunks) {
+         // it's possible to receive a late message so we must be prepared to ignore segments we no longer own
+         //todo [anistor] this check should be based on topologyId
+         if (!cacheTopology.getWriteConsistentHash().getSegmentsForOwner(rpcManager.getAddress()).contains(stateChunk.getSegmentId())) {
+            if (trace) {
+               log.warnf("Discarding received cache entries for segment %d of cache %s because they do not belong to this node.", stateChunk.getSegmentId(), cacheName);
             }
+            continue;
          }
-      } else {
-         log.warnf("Received unsolicited state from node %s for segment %d of cache %s", sender, segmentId, cacheName);
+
+         // notify the inbound task that a chunk of cache entries was received
+         InboundTransferTask inboundTransfer;
+         synchronized (this) {
+            inboundTransfer = transfersBySegment.get(stateChunk.getSegmentId());
+         }
+         if (inboundTransfer != null) {
+            if (stateChunk.getCacheEntries() != null) {
+               doApplyState(sender, stateChunk.getSegmentId(), stateChunk.getCacheEntries());
+            }
+
+            inboundTransfer.onStateReceived(stateChunk.getSegmentId(), stateChunk.isLastChunk());
+         } else {
+            log.warnf("Received unsolicited state from node %s for segment %d of cache %s", sender, stateChunk.getSegmentId(), cacheName);
+         }
+      }
+
+      if (trace) {
+         log.tracef("After applying the received state the data container of cache %s has %d keys", cacheName, dataContainer.size());
+         synchronized (this) {
+            log.tracef("Segments not received yet for cache %s: %s", cacheName, transfersBySource);
+         }
       }
    }
 

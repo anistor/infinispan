@@ -59,7 +59,7 @@ public class OutboundTransferTask implements Runnable {
 
    private final boolean trace = log.isTraceEnabled();
 
-   private StateProviderImpl stateProvider;
+   private final StateProviderImpl stateProvider;
 
    private final int topologyId;
 
@@ -73,7 +73,7 @@ public class OutboundTransferTask implements Runnable {
 
    private final DataContainer dataContainer;
 
-   private final CacheLoaderManager cacheLoaderManager;
+   private final CacheLoaderManager cacheLoaderManager;  // optional
 
    private final RpcManager rpcManager;
 
@@ -143,11 +143,13 @@ public class OutboundTransferTask implements Runnable {
       return segments;
    }
 
-   //todo [anistor] check thread interrupt status in loops to implement faster cancellation
    public void run() {
       try {
          // send data container entries
          for (InternalCacheEntry ice : dataContainer) {
+            if (Thread.currentThread().isInterrupted()) {
+               return;
+            }
             Object key = ice.getKey();  //todo [anistor] should we check for expired entries?
             int segmentId = readCh.getSegment(key);
             if (segments.contains(segmentId)) {
@@ -162,6 +164,9 @@ public class OutboundTransferTask implements Runnable {
                //todo [anistor] need to extend CacheStore interface to be able to specify a filter when loading keys (ie. keys should belong to desired segments)
                Set<Object> storedKeys = cacheStore.loadAllKeys(new ReadOnlyDataContainerBackedKeySet(dataContainer));
                for (Object key : storedKeys) {
+                  if (Thread.currentThread().isInterrupted()) {
+                     return;
+                  }
                   int segmentId = readCh.getSegment(key);
                   if (segments.contains(segmentId)) {
                      try {
@@ -224,6 +229,10 @@ public class OutboundTransferTask implements Runnable {
    }
 
    private void sendEntries(boolean isLast) {
+      if (Thread.currentThread().isInterrupted()) {
+         return;
+      }
+
       List<StateChunk> chunks = new ArrayList<StateChunk>();
       for (Map.Entry<Integer, List<InternalCacheEntry>> e : entriesBySegment.entrySet()) {
          List<InternalCacheEntry> entries = e.getValue();

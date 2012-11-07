@@ -80,12 +80,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * // TODO: Document this
+ * Tests StateConsumerImpl.
  *
  * @author anistor@redhat.com
  * @since 5.2
  */
-@Test(groups = "functional", testName = "statetransfer.StateConsumerTest", enabled = true)
+@Test(groups = "functional", testName = "statetransfer.StateConsumerTest")
 public class StateConsumerTest {
 
    private static final Log log = LogFactory.getLog(StateConsumerTest.class);
@@ -124,7 +124,6 @@ public class StateConsumerTest {
       Cache cache = mock(Cache.class);
       when(cache.getName()).thenReturn("testCache");
 
-      StateProvider stateProvider = mock(StateProvider.class);
       StateTransferManager stateTransferManager = mock(StateTransferManager.class);
       CacheNotifier cacheNotifier = mock(CacheNotifier.class);
       ExecutorService mockExecutorService = mock(ExecutorService.class);
