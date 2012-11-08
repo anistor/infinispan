@@ -70,8 +70,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -124,9 +123,18 @@ public class StateConsumerTest {
       Cache cache = mock(Cache.class);
       when(cache.getName()).thenReturn("testCache");
 
+      ThreadFactory threadFactory = new ThreadFactory() {
+         @Override
+         public Thread newThread(Runnable r) {
+            return new Thread(r);
+         }
+      };
+
+      ExecutorService pooledExecutorService = new ThreadPoolExecutor(10, 20, 0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingDeque<Runnable>(), threadFactory, new ThreadPoolExecutor.CallerRunsPolicy());
+
       StateTransferManager stateTransferManager = mock(StateTransferManager.class);
       CacheNotifier cacheNotifier = mock(CacheNotifier.class);
-      ExecutorService mockExecutorService = mock(ExecutorService.class);
       RpcManager rpcManager = mock(RpcManager.class);
       Transport transport = mock(Transport.class);
       CommandsFactory commandsFactory = mock(CommandsFactory.class);
@@ -136,13 +144,6 @@ public class StateConsumerTest {
       StateTransferLock stateTransferLock = mock(StateTransferLock.class);
       InterceptorChain interceptorChain = mock(InterceptorChain.class);
       InvocationContextContainer icc = mock(InvocationContextContainer.class);
-
-      when(mockExecutorService.submit(any(Runnable.class))).thenAnswer(new Answer<Future<?>>() {
-         @Override
-         public Future<?> answer(InvocationOnMock invocation) {
-            return null;
-         }
-      });
 
       when(commandsFactory.buildStateRequestCommand(any(StateRequestCommand.Type.class), any(Address.class), anyInt(), any(Set.class))).thenAnswer(new Answer<StateRequestCommand>() {
          @Override
@@ -181,7 +182,7 @@ public class StateConsumerTest {
 
       // create state provider
       StateConsumerImpl stateConsumer = new StateConsumerImpl();
-      stateConsumer.init(cache, stateTransferManager, interceptorChain, icc, configuration, rpcManager,
+      stateConsumer.init(cache, pooledExecutorService, stateTransferManager, interceptorChain, icc, configuration, rpcManager,
             commandsFactory, cacheLoaderManager, dataContainer, transactionTable, stateTransferLock);
       stateConsumer.start();
 

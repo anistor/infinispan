@@ -33,7 +33,8 @@ import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Inbound state transfer task. Fetches transactions and data segments from a remote source and applies it to local
@@ -68,7 +69,13 @@ public class InboundTransferTask {
 
    private final String cacheName;
 
-   public InboundTransferTask(Set<Integer> segments, Address source, int topologyId, StateConsumerImpl stateConsumer, RpcManager rpcManager, CommandsFactory commandsFactory, long timeout, String cacheName) {
+   private final ExecutorService executorService;
+
+   private final AtomicReference<FutureTask<Boolean>> segmentsFutureRef = new AtomicReference<FutureTask<Boolean>>();
+
+   public InboundTransferTask(Set<Integer> segments, Address source, int topologyId, StateConsumerImpl stateConsumer,
+                              RpcManager rpcManager, CommandsFactory commandsFactory, ExecutorService executorService,
+                              long timeout, String cacheName) {
       if (segments == null || segments.isEmpty()) {
          throw new IllegalArgumentException("segments must not be null or empty");
       }
@@ -82,6 +89,7 @@ public class InboundTransferTask {
       this.stateConsumer = stateConsumer;
       this.rpcManager = rpcManager;
       this.commandsFactory = commandsFactory;
+      this.executorService = executorService;
       this.timeout = timeout;
       this.cacheName = cacheName;
    }
@@ -94,33 +102,36 @@ public class InboundTransferTask {
       return source;
    }
 
-   public boolean requestTransactions() {
-      if (trace) {
-         log.tracef("Requesting transactions for segments %s of cache %s from node %s", segments, cacheName, source);
+   public Future<Boolean> getSegmentsFuture() {
+      Future<Boolean> future = segmentsFutureRef.get();
+      if (future == null) {
+         throw new IllegalStateException("Segments were not requested yet");
       }
-      // get transactions and locks
-      StateRequestCommand cmd = commandsFactory.buildStateRequestCommand(StateRequestCommand.Type.GET_TRANSACTIONS, rpcManager.getAddress(), topologyId, segments);
-      Map<Address, Response> responses = rpcManager.invokeRemotely(Collections.singleton(source), cmd, ResponseMode.SYNCHRONOUS_IGNORE_LEAVERS, timeout);
-      Response response = responses.get(source);
-      if (response instanceof SuccessfulResponse) {
-         List<TransactionInfo> transactions = (List<TransactionInfo>) ((SuccessfulResponse) response).getResponseValue();
-         stateConsumer.applyTransactions(source, topologyId, transactions);
-         return true;
-      } else {
-         return false;
-      }
+      return future;
    }
 
-   public boolean requestSegments() {
-      if (trace) {
-         log.tracef("Requesting segments %s of cache %s from node %s", segments, cacheName, source);
-      }
-
+   public void requestSegments() {
       // start transfer of cache entries
-      StateRequestCommand cmd = commandsFactory.buildStateRequestCommand(StateRequestCommand.Type.START_STATE_TRANSFER, rpcManager.getAddress(), topologyId, segments);
-      Map<Address, Response> responses = rpcManager.invokeRemotely(Collections.singleton(source), cmd, ResponseMode.SYNCHRONOUS_IGNORE_LEAVERS, timeout);
-      Response response = responses.get(source);
-      return response instanceof SuccessfulResponse;
+      FutureTask<Boolean> task = new FutureTask<Boolean>(new Callable<Boolean>() {
+         @Override
+         public Boolean call() {
+            StateRequestCommand cmd = commandsFactory.buildStateRequestCommand(StateRequestCommand.Type.START_STATE_TRANSFER, rpcManager.getAddress(), topologyId, segments);
+            Map<Address, Response> responses = rpcManager.invokeRemotely(Collections.singleton(source), cmd, ResponseMode.SYNCHRONOUS_IGNORE_LEAVERS, timeout);
+            Response response = responses.get(source);
+            if (response instanceof SuccessfulResponse) {
+               return true;
+            }
+            log.failedToRequestSegments(segments, cacheName, source);
+            return false;
+         }
+      });
+
+      if (segmentsFutureRef.compareAndSet(null, task)) {
+         if (trace) {
+            log.tracef("Requesting segments %s of cache %s from node %s", segments, cacheName, source);
+         }
+         executorService.submit(task);
+      }
    }
 
    public void cancelSegments(Set<Integer> cancelledSegments) {

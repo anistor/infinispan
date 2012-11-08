@@ -33,12 +33,12 @@ import org.infinispan.distribution.TestAddress;
 import org.infinispan.distribution.ch.ConsistentHash;
 import org.infinispan.distribution.ch.DefaultConsistentHashFactory;
 import org.infinispan.loaders.CacheLoaderManager;
+import org.infinispan.remoting.rpc.ResponseMode;
 import org.infinispan.remoting.rpc.RpcManager;
 import org.infinispan.remoting.transport.Address;
 import org.infinispan.transaction.LocalTransaction;
 import org.infinispan.transaction.RemoteTransaction;
 import org.infinispan.transaction.TransactionTable;
-import org.infinispan.util.concurrent.NotifyingNotifiableFuture;
 import org.infinispan.util.logging.Log;
 import org.infinispan.util.logging.LogFactory;
 import org.mockito.ArgumentCaptor;
@@ -134,7 +134,7 @@ public class OutboundTransferTaskTest {
       InOrder inOrder = inOrder(rpcManager, stateProvider);
       inOrder.verify(rpcManager).getAddress();
       ArgumentCaptor<StateResponseCommand> argumentCaptor = ArgumentCaptor.forClass(StateResponseCommand.class);
-      inOrder.verify(rpcManager).invokeRemotelyInFuture(any(Collection.class), argumentCaptor.capture(), anyBoolean(), any(NotifyingNotifiableFuture.class), anyLong());
+      inOrder.verify(rpcManager).invokeRemotely(any(Collection.class), argumentCaptor.capture(), any(ResponseMode.class), anyLong(), anyBoolean());
 
       Object[] cmdParams = argumentCaptor.getValue().getParameters();
       assertEquals(new TestAddress(0), cmdParams[0]);
@@ -206,31 +206,35 @@ public class OutboundTransferTaskTest {
 
       StateProviderImpl stateProvider = mock(StateProviderImpl.class);
 
-      final CountDownLatch invokeRemotelyInFutureLatch = new CountDownLatch(1);
-      final CountDownLatch taskCompletionLatch = new CountDownLatch(1);
+      final CountDownLatch invokeRemotelyLatch = new CountDownLatch(1);
+      final CountDownLatch taskCompletionLatch = new CountDownLatch(2);
       final AtomicBoolean wasInterrupted = new AtomicBoolean(false);
 
       doAnswer(new Answer() {
          @Override
          public Object answer(InvocationOnMock invocation) throws Throwable {
-            invokeRemotelyInFutureLatch.countDown();
+            try {
+               invokeRemotelyLatch.countDown();
 
-            final Object lock = new Object();
-            synchronized (lock) { // this lock is never notified
-               try {
-                  lock.wait(); // wait until interrupted
-               } catch (InterruptedException e) {
-                  wasInterrupted.set(true);
-                  if (throwInterruptedException) {
-                     throw e;
-                  } else {
-                     Thread.currentThread().interrupt();
+               final Object lock = new Object();
+               synchronized (lock) { // this lock is never notified
+                  try {
+                     lock.wait(); // wait until interrupted
+                  } catch (InterruptedException e) {
+                     wasInterrupted.set(true);
+                     if (throwInterruptedException) {
+                        throw e;
+                     } else {
+                        Thread.currentThread().interrupt();
+                     }
                   }
                }
+               return null;
+            } finally {
+               taskCompletionLatch.countDown();
             }
-            return null;
          }
-      }).when(rpcManager).invokeRemotelyInFuture(any(Collection.class), any(StateResponseCommand.class), anyBoolean(), any(NotifyingNotifiableFuture.class), anyLong());
+      }).when(rpcManager).invokeRemotely(any(Collection.class), any(StateResponseCommand.class), any(ResponseMode.class), anyLong(), anyBoolean());
 
       doAnswer(new Answer() {
          @Override
@@ -247,10 +251,10 @@ public class OutboundTransferTaskTest {
 
       assertFalse(task.isCancelled());
 
-      invokeRemotelyInFutureLatch.await();
+      invokeRemotelyLatch.await();
 
       verify(rpcManager).getAddress();
-      verify(rpcManager).invokeRemotelyInFuture(any(Collection.class), any(StateResponseCommand.class), anyBoolean(), any(NotifyingNotifiableFuture.class), anyLong());
+      verify(rpcManager).invokeRemotely(any(Collection.class), any(StateResponseCommand.class), any(ResponseMode.class), anyLong(), anyBoolean());
 
       task.cancel();
 

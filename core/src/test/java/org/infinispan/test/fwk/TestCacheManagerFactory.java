@@ -75,7 +75,7 @@ import org.jboss.staxmapper.XMLMapper;
  */
 public class TestCacheManagerFactory {
 
-   private static final int MAX_ASYNC_EXEC_THREADS = 6;
+   private static final int MAX_ASYNC_EXEC_THREADS = 10;
 
    public static final String MARSHALLER = LegacyKeySupportSystemProperties.getProperty("infinispan.test.marshaller.class", "infinispan.marshaller.class");
    private static final Log log = LogFactory.getLog(TestCacheManagerFactory.class);

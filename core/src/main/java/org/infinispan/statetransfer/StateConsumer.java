@@ -63,4 +63,6 @@ public interface StateConsumer {
     * This is executed when the cache is shutting down.
     */
    void stop();
+
+   void dump();
 }
