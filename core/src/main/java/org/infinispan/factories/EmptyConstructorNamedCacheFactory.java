@@ -43,6 +43,7 @@ import org.infinispan.loaders.CacheLoaderManager;
 import org.infinispan.loaders.CacheLoaderManagerImpl;
 import org.infinispan.notifications.cachelistener.CacheNotifier;
 import org.infinispan.notifications.cachelistener.CacheNotifierImpl;
+import org.infinispan.statetransfer.DummyStateTransferLockImpl;
 import org.infinispan.statetransfer.StateTransferLock;
 import org.infinispan.statetransfer.StateTransferLockImpl;
 import org.infinispan.transaction.TransactionCoordinator;
@@ -104,7 +105,8 @@ public class EmptyConstructorNamedCacheFactory extends AbstractNamedCacheCompone
          } else if (componentType.equals(RecoveryAdminOperations.class)) {
             return (T) new RecoveryAdminOperations();
          } else if (componentType.equals(StateTransferLock.class)) {
-            return (T) new StateTransferLockImpl();
+            return configuration.clustering().cacheMode().isClustered() ?
+                  (T) new StateTransferLockImpl() : (T) new DummyStateTransferLockImpl();
          } else if (componentType.equals(EvictionManager.class)) {
             return (T) new EvictionManagerImpl();
          } else if (componentType.equals(LockContainer.class)) {
