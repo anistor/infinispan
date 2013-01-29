@@ -30,7 +30,10 @@ import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.DataRehashed;
 import org.infinispan.notifications.cachelistener.event.DataRehashedEvent;
 import org.infinispan.test.MultipleCacheManagersTest;
+import org.infinispan.test.TestingUtil;
 import org.infinispan.test.fwk.CleanupAfterMethod;
+import org.infinispan.util.logging.Log;
+import org.infinispan.util.logging.LogFactory;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -53,43 +56,94 @@ public class DataRehashedEventTest extends MultipleCacheManagersTest {
    protected void createCacheManagers() throws Throwable {
       createClusteredCaches(1, defaultConfig);
 
-      Cache<Object, Object> c1 = cache(0, "cache");
+      Cache<Object, Object> c1 = cache(0);
       rehashListener = new DataRehashedListener();
       c1.addListener(rehashListener);
    }
 
    public void testJoinAndLeave() {
-      ConsistentHash preCH = advancedCache(0, "cache").getDistributionManager().getReadConsistentHash();
+      ConsistentHash ch1Node = advancedCache(0).getDistributionManager().getReadConsistentHash();
       assertEquals(rehashListener.removeEvents().size(), 0);
 
+      // start a second node and wait for the rebalance to end
       addClusterEnabledCacheManager(defaultConfig);
-      cache(1, "cache");
-      ConsistentHash postCH = advancedCache(0, "cache").getDistributionManager().getReadConsistentHash();
+      cache(1);
+      TestingUtil.waitForRehashToComplete(cache(0), cache(1));
 
-      List<DataRehashedEvent<Object, Object>> newEvents = rehashListener.removeEvents();
-      DataRehashedEvent<Object, Object> pre = newEvents.get(0);
-      DataRehashedEvent<Object, Object> post = newEvents.get(1);
+      ConsistentHash ch2Nodes = advancedCache(0).getDistributionManager().getReadConsistentHash();
+      List<DataRehashedEvent<Object, Object>> events = rehashListener.removeEvents();
+      assertEquals(events.size(), 2);
+      DataRehashedEvent<Object, Object> pre = events.get(0);
+      DataRehashedEvent<Object, Object> post = events.get(1);
 
       assertTrue(pre.isPre());
-      assertEquals(pre.getConsistentHashAtStart(), preCH);
-      assertEquals(pre.getMembersAtStart(), preCH.getMembers());
+      assertEquals(pre.getConsistentHashAtStart(), ch1Node);
       // we could get this "intermediate" CH with TopologyChanged events, but this should be enough
       assertNotNull(pre.getConsistentHashAtEnd());
-      assertEquals(pre.getMembersAtEnd(), postCH.getMembers());
+      assertEquals(pre.getMembersAtEnd(), ch2Nodes.getMembers());
 
       assertFalse(post.isPre());
-      assertEquals(post.getConsistentHashAtStart(), preCH);
-      assertEquals(post.getMembersAtStart(), preCH.getMembers());
-      assertEquals(post.getConsistentHashAtEnd(), postCH);
-      assertEquals(post.getMembersAtEnd(), postCH.getMembers());
+      assertEquals(post.getConsistentHashAtStart(), ch1Node);
+      assertEquals(post.getConsistentHashAtEnd(), ch2Nodes);
+
+      // start a third node and wait for the rebalance to end
+      addClusterEnabledCacheManager(defaultConfig);
+      cache(2);
+      TestingUtil.waitForRehashToComplete(cache(0), cache(1), cache(2));
+
+      ConsistentHash ch3Nodes = advancedCache(0).getDistributionManager().getReadConsistentHash();
+      events = rehashListener.removeEvents();
+      assertEquals(events.size(), 2);
+      pre = events.get(0);
+      post = events.get(1);
+
+      assertTrue(pre.isPre());
+      assertEquals(pre.getConsistentHashAtStart(), ch2Nodes);
+      // we could get this "intermediate" CH with TopologyChanged events, but this should be enough
+      assertNotNull(pre.getConsistentHashAtEnd());
+      assertEquals(pre.getMembersAtEnd(), ch3Nodes.getMembers());
+
+      assertFalse(post.isPre());
+      assertEquals(post.getConsistentHashAtStart(), ch2Nodes);
+      assertEquals(post.getConsistentHashAtEnd(), ch3Nodes);
+
+      // stop cache 2 and wait for the rebalance to end
+      killMember(2);
+
+      // this CH might be different than the CH before the 3rd node joined
+      ConsistentHash chAfterLeave = advancedCache(0).getDistributionManager().getReadConsistentHash();
+      events = rehashListener.removeEvents();
+      assertEquals(events.size(), 2);
+      pre = events.get(0);
+      post = events.get(1);
+
+      assertTrue(pre.isPre());
+      // we could get this "intermediate" CH with TopologyChanged events, but this should be enough
+      assertNotNull(pre.getConsistentHashAtStart());
+      assertEquals(pre.getMembersAtStart(), chAfterLeave.getMembers());
+      assertEquals(pre.getConsistentHashAtEnd(), chAfterLeave);
+
+      assertFalse(post.isPre());
+      assertEquals(post.getConsistentHashAtStart(), pre.getConsistentHashAtStart());
+      assertEquals(post.getConsistentHashAtEnd(), pre.getConsistentHashAtEnd());
+
+      // stop cache 1 and wait for the rebalance to end
+      killMember(1);
+
+      // cache 0 was already an owner for all the segments, so there shouldn't be any rebalance
+      events = rehashListener.removeEvents();
+      assertEquals(events.size(), 0);
    }
 
    @Listener
-   public static class DataRehashedListener {
+   public class DataRehashedListener {
+      //private static Log log = LogFactory.getLog(DataRehashedListener.class);
+
       private volatile List<DataRehashedEvent<Object, Object>> events = new CopyOnWriteArrayList<DataRehashedEvent<Object, Object>>();
 
       @DataRehashed
       public void onDataRehashed(DataRehashedEvent<Object, Object> e) {
+         log.tracef("New event received: %s", e);
          events.add(e);
       }
 
