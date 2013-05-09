@@ -22,10 +22,10 @@ package org.infinispan.interceptors;
 import org.infinispan.commands.CommandsFactory;
 import org.infinispan.commands.read.GetKeyValueCommand;
 import org.infinispan.commands.remote.ClusteredGetCommand;
+import org.infinispan.commons.hash.MurmurHash3;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.Configuration;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
-import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.container.DataContainer;
 import org.infinispan.container.EntryFactory;
 import org.infinispan.container.entries.ImmortalCacheValue;
@@ -71,7 +71,6 @@ public class ReplicationInterceptorTest {
       ConfigurationBuilder cb = new ConfigurationBuilder();
       cb.clustering().cacheMode(CacheMode.REPL_SYNC);
 
-      GlobalConfigurationBuilder gcb = GlobalConfigurationBuilder.defaultClusteredBuilder();
       Configuration configuration = cb.build();
 
       ReplicationInterceptor replInterceptor = new ReplicationInterceptor();
@@ -103,8 +102,8 @@ public class ReplicationInterceptorTest {
       members1.add(A);
       members2.add(A);
       members2.add(B);
-      ReplicatedConsistentHash readCh = new ReplicatedConsistentHash(members1);
-      ReplicatedConsistentHash writeCh = new ReplicatedConsistentHash(members2);
+      ReplicatedConsistentHash readCh = new ReplicatedConsistentHash(new MurmurHash3(), members1, new int[] {0});
+      ReplicatedConsistentHash writeCh = new ReplicatedConsistentHash(new MurmurHash3(), members2, new int[] {0});
       final CacheTopology cacheTopology = new CacheTopology(1, readCh, writeCh);
       when(stateTransferManager.getCacheTopology()).thenAnswer(new Answer<CacheTopology>() {
          @Override
