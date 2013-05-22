@@ -24,9 +24,6 @@
 package org.infinispan.tx.recovery.admin;
 
 import org.infinispan.Cache;
-import org.infinispan.affinity.KeyAffinityService;
-import org.infinispan.affinity.KeyAffinityServiceFactory;
-import org.infinispan.affinity.RndKeyGenerator;
 import org.infinispan.config.Configuration;
 import org.infinispan.distribution.MagicKey;
 import org.infinispan.interceptors.InvocationContextInterceptor;
@@ -37,7 +34,6 @@ import org.testng.annotations.Test;
 
 import javax.transaction.xa.XAException;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import static org.infinispan.tx.recovery.RecoveryTestUtil.commitTransaction;
 import static org.infinispan.tx.recovery.RecoveryTestUtil.prepareTransaction;
@@ -71,7 +67,6 @@ public class CommitFailsTest extends AbstractRecoveryTest {
       advancedCache(1).addInterceptorAfter(failureInterceptor1, InvocationContextInterceptor.class);
    }
 
-
    @BeforeMethod
    protected void setUpTx() throws Exception {
       failureInterceptor0.fail = true;
@@ -95,7 +90,6 @@ public class CommitFailsTest extends AbstractRecoveryTest {
 
       failureInterceptor0.fail = false;
       failureInterceptor1.fail = false;
-
    }
 
    protected Object getKey() {
@@ -129,7 +123,6 @@ public class CommitFailsTest extends AbstractRecoveryTest {
          assertEquals(actual, newValue);
       }
    }
-
 
    protected void runTest(int where) {
       List<Long> internalIds = getInternalIds(recoveryOps(where).showInDoubtTransactions());

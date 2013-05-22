@@ -37,7 +37,7 @@ public class PutForExternalReadDistPessimisticTest extends PutForExternalReadTes
       ConfigurationBuilder c = getDefaultClusteredCacheConfig(CacheMode.DIST_SYNC, true);
       c.clustering().hash().numOwners(100).numSegments(4).l1().disable();
       c.transaction().lockingMode(LockingMode.PESSIMISTIC).useSynchronization(false)
-            .recovery().disable().locking().useLockStriping(false);
+            .recovery().enable().locking().useLockStriping(false);
       return c;
    }
 }

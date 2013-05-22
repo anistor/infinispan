@@ -214,19 +214,23 @@ public class TransactionCoordinator {
       } else {
          log.errorProcessing2pcCommitCommand(e);
       }
+      boolean rolledBackSuccessfully = false;
       try {
-         if (!(onePhaseCommit && configuration.transaction().transactionProtocol().isTotalOrder())) {
+         if (!configuration.transaction().recovery().enabled() || !(onePhaseCommit && configuration.transaction().transactionProtocol().isTotalOrder())) {
             //we cannot send the rollback in Total Order because it will create a new remote transaction.
             //the rollback is not needed any way, because if one node aborts the transaction, then all the nodes will
             //abort too.
             rollbackInternal(localTransaction);
+            rolledBackSuccessfully = true;
          }
       } catch (Throwable e1) {
          log.couldNotRollbackPrepared1PcTransaction(localTransaction, e1);
          // inform the TM that a resource manager error has occurred in the transaction branch (XAER_RMERR).
          throw new XAException(XAException.XAER_RMERR);
       } finally {
-         txTable.failureCompletingTransaction(localTransaction.getTransaction());
+         if (!rolledBackSuccessfully) {
+            txTable.failureCompletingTransaction(localTransaction.getTransaction());
+         }
       }
       throw new XAException(XAException.XA_HEURRB); //this is a heuristic rollback
    }

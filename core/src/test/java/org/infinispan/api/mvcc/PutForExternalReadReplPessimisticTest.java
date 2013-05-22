@@ -39,4 +39,9 @@ public class PutForExternalReadReplPessimisticTest extends PutForExternalReadTes
             .recovery().disable().locking().useLockStriping(false);
       return c;
    }
+
+   @Override
+   public void testExceptionSuppression() throws Exception {
+      super.testExceptionSuppression();    // TODO: Customise this generated block
+   }
 }

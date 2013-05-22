@@ -27,7 +27,6 @@ import org.infinispan.config.Configuration;
 import org.infinispan.test.MultipleCacheManagersTest;
 import org.infinispan.test.TestingUtil;
 import org.infinispan.transaction.TransactionTable;
-import org.infinispan.transaction.lookup.DummyTransactionManagerLookup;
 import org.infinispan.transaction.xa.recovery.RecoveryAdminOperations;
 import org.infinispan.transaction.xa.recovery.RecoveryAwareTransactionTable;
 import org.infinispan.transaction.xa.recovery.RecoveryManager;
@@ -38,8 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.testng.Assert.assertEquals;
 
 /**
  * @author Mircea Markus
