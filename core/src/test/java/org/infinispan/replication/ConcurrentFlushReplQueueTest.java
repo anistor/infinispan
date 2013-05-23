@@ -24,8 +24,9 @@ package org.infinispan.replication;
 
 import org.infinispan.Cache;
 import org.infinispan.commands.ReplicableCommand;
-import org.infinispan.config.Configuration;
-import org.infinispan.config.GlobalConfiguration;
+import org.infinispan.configuration.cache.CacheMode;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.CacheContainer;
 import org.infinispan.remoting.ReplicationQueueImpl;
 import org.infinispan.test.MultipleCacheManagersTest;
@@ -53,14 +54,14 @@ public class ConcurrentFlushReplQueueTest extends MultipleCacheManagersTest {
 
    @Override
    protected void createCacheManagers() throws Throwable {
-      Configuration cfg = new Configuration();
-      cfg.setCacheMode(Configuration.CacheMode.REPL_ASYNC);
-      cfg.setUseReplQueue(true);
-      cfg.setReplQueueInterval(1000);
-      cfg.setReplQueueMaxElements(2);
-      cfg.setReplQueueClass(MockReplQueue.class.getName());
-      CacheContainer first = TestCacheManagerFactory.createCacheManager(GlobalConfiguration.getClusteredDefault(), cfg);
-      CacheContainer second = TestCacheManagerFactory.createCacheManager(GlobalConfiguration.getClusteredDefault(), cfg);
+      ConfigurationBuilder cfg = new ConfigurationBuilder();
+      cfg.clustering().cacheMode(CacheMode.REPL_ASYNC)
+            .async().useReplQueue(true)
+            .replQueueInterval(1000)
+            .replQueueMaxElements(2)
+            .replQueue(new MockReplQueue());
+      CacheContainer first = TestCacheManagerFactory.createCacheManager(GlobalConfigurationBuilder.defaultClusteredBuilder(), cfg);
+      CacheContainer second = TestCacheManagerFactory.createCacheManager(GlobalConfigurationBuilder.defaultClusteredBuilder(), cfg);
       registerCacheManager(first, second);
       // wait for the coordinator to install the balanced CH, otherwise StateTransferInterceptor will duplicate the command (via forwarding)
       waitForClusterToForm();
