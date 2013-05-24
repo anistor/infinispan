@@ -203,7 +203,7 @@ public class TxDistributionInterceptor extends BaseDistributionInterceptor {
    public Object visitLockControlCommand(TxInvocationContext ctx, LockControlCommand command) throws Throwable {
       if (ctx.isOriginLocal()) {
          final Collection<Address> affectedNodes = cdl.getOwners(command.getKeys());
-         ((LocalTxInvocationContext) ctx).remoteLocksAcquired(affectedNodes);
+         ((LocalTxInvocationContext) ctx).remoteLocksAcquired(affectedNodes == null ? dm.getConsistentHash().getMembers() : affectedNodes);
          log.tracef("Registered remote locks acquired %s", affectedNodes);
          rpcManager.invokeRemotely(affectedNodes, command, rpcManager.getDefaultRpcOptions(true, false));
       }
@@ -248,9 +248,10 @@ public class TxDistributionInterceptor extends BaseDistributionInterceptor {
 
          boolean affectsAllNodes = ctx.getCacheTransaction().hasModification(ClearCommand.class);
          Collection<Address> recipients = affectsAllNodes ? dm.getWriteConsistentHash().getMembers() : cdl.getOwners(ctx.getAffectedKeys());
+         recipients = recipients == null ? dm.getWriteConsistentHash().getMembers() : recipients;
          prepareOnAffectedNodes(ctx, command, recipients, defaultSynchronous);
 
-         ((LocalTxInvocationContext) ctx).remoteLocksAcquired(recipients);
+         ((LocalTxInvocationContext) ctx).remoteLocksAcquired(recipients == null ? dm.getWriteConsistentHash().getMembers() : recipients);
       } else if (isL1CacheEnabled && command.isOnePhaseCommit() && !ctx.isOriginLocal() && !ctx.getLockedKeys().isEmpty()) {
          // We fall into this block if we are a remote node, happen to be the primary data owner and have locked keys.
          // it is still our responsibility to invalidate L1 caches in the cluster.

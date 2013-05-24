@@ -89,7 +89,7 @@ public class EmptyConstructorNamedCacheFactory extends AbstractNamedCacheCompone
          } else if (cacheMode.isInvalidation()) {
             return componentType.cast(new ClusteringDependentLogic.InvalidationLogic());
          } else if (cacheMode.isReplicated()) {
-            return componentType.cast(new ClusteringDependentLogic.DistributionLogic());   //todo [anistor] which one?
+            return componentType.cast(new ClusteringDependentLogic.ReplicationLogic());
          } else {
             return componentType.cast(new ClusteringDependentLogic.DistributionLogic());
          }
