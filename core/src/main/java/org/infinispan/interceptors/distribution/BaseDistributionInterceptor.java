@@ -131,9 +131,13 @@ public abstract class BaseDistributionInterceptor extends ClusteringInterceptor 
       } else {
          Address primaryOwner = cdl.getPrimaryOwner(command.getKey());
          if (primaryOwner.equals(rpcManager.getAddress())) {
+            Object result = invokeNextInterceptor(ctx, command);
+            if (command.isConditional() && !command.isSuccessful()) {
+               log.tracef("Skipping the replication of the conditional command as it is not successful (%s).", command);
+               return result;
+            }
             List<Address> recipients = recipientGenerator.generateRecipients();
             log.tracef("I'm the primary owner, sending the command to all (%s) the recipients in order to be applied.", recipients);
-            Object result = invokeNextInterceptor(ctx, command);
             // check if a single owner has been configured and the target for the key is the local address
             boolean isSingleOwnerAndLocal = cacheConfiguration.clustering().hash().numOwners() == 1
                   && recipients != null

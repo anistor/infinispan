@@ -23,24 +23,28 @@
 
 package org.infinispan.distribution;
 
-import org.infinispan.test.ReplListener;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Test(groups = "functional", testName = "distribution.AsyncAPINonTxAsyncDistTest")
 public class AsyncAPINonTxAsyncDistTest extends AsyncAPINonTxSyncDistTest {
 
-   private ReplListener rl;
-   private ReplListener rlNoTx;
 
    @Override
    protected void createCacheManagers() throws Throwable {
       super.createCacheManagers();
-      rl = new ReplListener(cache(1), true);
-      rlNoTx = new ReplListener(cache(1, "noTx"), true);
    }
 
    @Override
    protected boolean sync() {
       return false;
+   }
+
+   @Override
+   protected void assertEquals(final Future f, final Object o) throws ExecutionException, InterruptedException {
+      //operations are async so we don't wait for the return value
+      f.get();
    }
 }
