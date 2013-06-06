@@ -1,11 +1,11 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-parent</artifactId>
-      <version>5.2.6.Final</version>
+      <version>5.2.6.Final-redhat-1</version>
       <relativePath>parent/pom.xml</relativePath>
    </parent>
 
@@ -18,44 +18,15 @@
    <modules>
       <module>parent</module>
       <module>core</module>
-      <module>tools</module>
-      <module>query</module>
-      <module>tree</module>
-      <module>lucene-directory</module>
       <module>cachestore</module>
       <module>cachestore/jdbc</module>
-      <module>cachestore/jdbm</module>
-      <module>cachestore/bdbje</module>
-      <module>cachestore/cloud</module>
       <module>cachestore/remote</module>
-      <module>cachestore/cassandra</module>
-      <module>cachestore/hbase</module>
       <module>server</module>
       <module>server/core</module>
       <module>server/memcached</module>
       <module>server/hotrod</module>
-      <module>server/websocket</module>
       <module>server/rest</module>
       <module>client/hotrod-client</module>
-      <module>rhq-plugin</module>
-      <module>upgrade-tools</module>
-      <module>spring</module>
-      <module>cli/cli-server</module>
-      <module>cli/cli-client</module>
-      <module>demos/gui</module>
-      <module>demos/ec2</module>
-      <module>demos/distexec</module>
-      <module>demos/ec2-ui</module>
-      <module>demos/directory</module>
-      <module>demos/lucene-directory-demo</module>
-      <module>demos/gridfs-webdav</module>
-      <module>demos/nearcache</module>
-      <module>demos/nearcache-client</module>
-      <module>cdi/extension</module>
-      <module>cdi/tck-runner</module>
-      <module>as-modules</module>
-      <module>integrationtests/luceneintegration</module>
-      <module>integrationtests/as-integration</module>
    </modules>
 
    <profiles>
@@ -83,8 +54,7 @@
                               <link>http://java.sun.com/javase/6/docs/api/</link>
                               <link>http://java.sun.com/javaee/5/docs/api/</link>
                            </links>
-                           <footer>
---&gt;
+                           <footer>--&gt;
                       &lt;!-- Google Analytics --&gt;
 &lt;!--
 &lt;script type='text/javascript'&gt;
@@ -95,8 +65,7 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 try {
 var pageTracker = _gat._getTracker("UA-8601422-4");
 pageTracker._trackPageview();
-} catch(err) {}&lt;/script&gt;
-                     </footer>
+} catch(err) {}&lt;/script&gt;</footer>
                         </configuration>
                      </execution>
                   </executions>
@@ -146,7 +115,6 @@ pageTracker._trackPageview();
       <profile>
          <id>minimal-distribution</id>
          <activation>
-            <activeByDefault>false</activeByDefault>
          </activation>
          <properties>
             <maven.test.skip.exec>true</maven.test.skip.exec>
@@ -192,7 +160,6 @@ pageTracker._trackPageview();
       <profile>
          <id>jmxdoc</id>
          <activation>
-            <activeByDefault>false</activeByDefault>
          </activation>
          <properties>
             <maven.test.skip.exec>true</maven.test.skip.exec>
@@ -209,8 +176,7 @@ pageTracker._trackPageview();
                         <artifactId>infinispan-tools</artifactId>
                         <version>${project.version}</version>
                      </docletArtifact>
-                     <footer>
-                &lt;!-- Google Analytics --&gt;
+                     <footer>&lt;!-- Google Analytics --&gt;
 &lt;script type='text/javascript'&gt;
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -219,8 +185,7 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 try {
 var pageTracker = _gat._getTracker("UA-8601422-4");
 pageTracker._trackPageview();
-} catch(err) {}&lt;/script&gt;
-               </footer>
+} catch(err) {}&lt;/script&gt;</footer>
                   </configuration>
                   <executions>
                      <execution>
@@ -236,4 +201,5 @@ pageTracker._trackPageview();
          </build>
       </profile>
    </profiles>
+<!-- Modified by POM Artifact-Version Manipulator version 1.2.4-redhat-1-eap (722ee63) -->
 </project>
