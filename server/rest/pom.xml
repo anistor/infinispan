@@ -1,19 +1,18 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-server-parent</artifactId>
-      <version>5.2.7.Final</version>
+      <version>5.2.7.Final-redhat-1</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
    <artifactId>infinispan-server-rest</artifactId>
    <packaging>war</packaging>
    <name>Infinispan REST Server</name>
-   <description>REST interface for Infinispan, packaged as a WAR file for deployment in a servlet container
-   </description>
+   <description>REST interface for Infinispan, packaged as a WAR file for deployment in a servlet container</description>
 
    <build>
       <finalName>infinispan</finalName>
@@ -25,10 +24,10 @@
             <groupId>org.scala-tools</groupId>
             <artifactId>maven-scala-plugin</artifactId>
          </plugin>
-         <plugin>
+         <!--<plugin>
             <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty-maven-plugin</artifactId>
-         </plugin>
+         </plugin>-->
          <plugin>
             <artifactId>maven-war-plugin</artifactId>
             <configuration>
@@ -57,8 +56,9 @@
       </dependency>
 
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
+         <groupId>org.jboss.spec.javax.servlet</groupId>
+         <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+         <version>1.0.2.Final-redhat-1</version>
          <scope>provided</scope>
       </dependency>
 
@@ -68,11 +68,11 @@
       </dependency>
 
       
-      <dependency>
+      <!--<dependency>
          <groupId>org.mortbay.jetty</groupId>
          <artifactId>jetty-embedded</artifactId>
          <scope>test</scope>
-      </dependency>
+      </dependency>-->
 
       <dependency>
          <groupId>commons-httpclient</groupId>
@@ -81,4 +81,7 @@
       </dependency>
 
    </dependencies>
+
+
+<!-- Modified by POM Artifact-Version Manipulator version 1.3.2-redhat-1-eap (71400e6) -->
 </project>
