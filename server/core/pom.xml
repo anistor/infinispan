@@ -1,10 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-server-parent</artifactId>
-      <version>5.2.7.Final</version>
+      <version>5.2.7.Final-redhat-1</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
@@ -12,11 +12,6 @@
    <packaging>bundle</packaging>
    <name>Infinispan Server - Core Components</name>
    <description>Infinispan Server - Core Components</description>
-
-   
-   <properties>
-      <module.skipComponentMetaDataProcessing>false</module.skipComponentMetaDataProcessing>
-   </properties>
 
    <dependencies>
       <dependency>
@@ -46,12 +41,13 @@
             <artifactId>maven-bundle-plugin</artifactId>
             <configuration>
                <instructions>
-                  <Export-Package>
-                     ${project.groupId}.server.core.*;version=${project.version};-split-package:=error
-                  </Export-Package>
+                  <Export-Package>${project.groupId}.server.core.*;version=${project.version};-split-package:=error</Export-Package>
                </instructions>
             </configuration>
          </plugin>
       </plugins>
    </build>
+
+
+<!-- Modified by POM Artifact-Version Manipulator version 1.3.2-redhat-1-eap (71400e6) -->
 </project>

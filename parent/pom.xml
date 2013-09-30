@@ -1,9 +1,14 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.infinispan</groupId>
+   <parent>
+    <artifactId>jboss-parent</artifactId>
+    <groupId>org.jboss</groupId>
+    <version>10</version>
+  </parent>
    <artifactId>infinispan-parent</artifactId>
-   <version>5.2.7.Final</version>
+   <version>5.2.7.Final-redhat-1</version>
    <packaging>pom</packaging>
    <name>Infinispan Common Parent</name>
    <description>Infinispan common parent POM module</description>
@@ -121,7 +126,7 @@
       <version.javax.servlet>2.5</version.javax.servlet>
       <version.jboss.marshalling>1.3.15.GA</version.jboss.marshalling>
       <version.jboss.as>7.1.1.Final</version.jboss.as>
-      <version.jbossjta>4.16.3.Final</version.jbossjta>
+      <version.jbossjta>4.16.6.Final-redhat-1</version.jbossjta>
       <version.osgi>4.3.0</version.osgi>
       <version.jboss.logging>3.1.1.GA</version.jboss.logging>
       <version.jboss.logging.processor>1.0.3.Final</version.jboss.logging.processor>
@@ -145,10 +150,10 @@
       <version.mockito>1.9.5</version.mockito>
       <version.mysql.driver>5.1.19</version.mysql.driver>
       <version.netty>3.6.1.Final</version.netty>
-      <version.org.jboss.naming>5.0.6.CR1</version.org.jboss.naming>
+      <version.org.jboss.naming>5.0.5.Final-redhat-1</version.org.jboss.naming>
       <version.resteasy>2.3.2.Final</version.resteasy>
       <version.rhq>4.2.0</version.rhq>
-      <version.scala>2.10.0</version.scala>
+      <version.scala>2.10.0-redhat-1</version.scala>
       <version.shrinkwrapResolver>2.0.0-alpha-6</version.shrinkwrapResolver>
       <version.slf4j>1.6.4</version.slf4j>
       <version.solder>3.1.0.Final</version.solder>
@@ -580,26 +585,26 @@
             <type>test-jar</type>
             <scope>test</scope>
          </dependency>
-         <dependency>
+         <!--<dependency>
             <groupId>org.jboss.arquillian</groupId>
             <artifactId>arquillian-bom</artifactId>
             <version>${version.arquillian}</version>
             <type>pom</type>
             <scope>import</scope>
-         </dependency>
+         </dependency>-->
          <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
             <version>${version.arquillian.container.weld}</version>
             <scope>test</scope>
          </dependency>
-         <dependency>
+         <!--<dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-bom</artifactId>
             <version>${version.shrinkwrapResolver}</version>
             <type>pom</type>
             <scope>import</scope>
-         </dependency>
+         </dependency>-->
          <dependency>
             <groupId>org.jboss.spec.javax.transaction</groupId>
             <artifactId>jboss-transaction-api_1.1_spec</artifactId>
@@ -1018,43 +1023,6 @@
          <scope>test</scope>
       </dependency>
    </dependencies>
-   <repositories>
-      <repository>
-         <releases>
-            <enabled>true</enabled>
-         </releases>
-         <snapshots>
-            <enabled>true</enabled>
-         </snapshots>
-         <id>jboss-public-repository</id>
-         <name>JBoss Public Repository and Proxy for third party repositories</name>
-         <url>https://repository.jboss.org/nexus/content/groups/public</url>
-      </repository>
-   </repositories>
-   <pluginRepositories>
-      <pluginRepository>
-         <releases>
-            <enabled>true</enabled>
-         </releases>
-         <snapshots>
-            <enabled>true</enabled>
-         </snapshots>
-         <id>jboss-public-plugin-repository</id>
-         <name>JBoss Public Plugin Repository and Proxy for third party plugin repositories</name>
-         <url>https://repository.jboss.org/nexus/content/groups/public</url>
-      </pluginRepository>
-      <pluginRepository>
-         <releases>
-            <enabled>true</enabled>
-         </releases>
-         <snapshots>
-            <enabled>true</enabled>
-         </snapshots>
-         <id>jboss-public-thirdparty-snapshots</id>
-         <name>JBoss Public third party snapshots plugin repositories</name>
-         <url>https://repository.jboss.org/nexus/content/groups/public-thirdparty-snapshots</url>
-      </pluginRepository>
-   </pluginRepositories>
    <build>
       <directory>${buildDirectory}</directory>
       <finalName>${project.artifactId}</finalName>
@@ -1063,7 +1031,6 @@
             <plugin>
                <groupId>org.antlr</groupId>
                <artifactId>antlr3-maven-plugin</artifactId>
-               <version>${version.antlr}</version>
                <executions>
                  <execution>
                      <goals>
@@ -1074,206 +1041,156 @@
             </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-clean-plugin</artifactId>
-               <version>2.5</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-install-plugin</artifactId>
-               <version>2.4</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-help-plugin</artifactId>
-                <version>2.1.1</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-deploy-plugin</artifactId>
-               <version>2.7</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.felix</groupId>
-               <artifactId>maven-bundle-plugin</artifactId>
-               <version>${version.maven.bundle}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-assembly-plugin</artifactId>
-               <version>2.4</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-dependency-plugin</artifactId>
-               <version>2.6</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-failsafe-plugin</artifactId>
-               <version>${version.maven.surefire}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-javadoc-plugin</artifactId>
-               <version>2.9</version>
+               <artifactId>maven-help-plugin</artifactId>
             </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-pmd-plugin</artifactId>
-               
-               <version>2.7.1</version>
                <configuration>
-                  <minimumTokens>100</minimumTokens>
-                  <targetJdk>1.6</targetJdk>
-                  <linkXref>false</linkXref>
-                  <sourceEncoding>utf-8</sourceEncoding>
-               </configuration>
+            <minimumTokens>100</minimumTokens>
+            <targetJdk>1.6</targetJdk>
+            <linkXref>false</linkXref>
+            <sourceEncoding>utf-8</sourceEncoding>
+          </configuration>
             </plugin>
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-surefire-plugin</artifactId>
-               <version>${version.maven.surefire}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+            <attachClasses>false</attachClasses>
+          </configuration>
             </plugin>
-            <plugin>
-               <artifactId>maven-war-plugin</artifactId>
-               <version>2.1.1</version>
-               <configuration>
-                  <attachClasses>false</attachClasses>
-               </configuration>
-            </plugin>
-            <plugin>
+            <!--<plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>appassembler-maven-plugin</artifactId>
-               <version>1.0</version>
-            </plugin>
+            </plugin>-->
             <plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>exec-maven-plugin</artifactId>
-               <version>1.2.1</version>
             </plugin>
-            <plugin>
+            <!--<plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>ideauidesigner-maven-plugin</artifactId>
-               <version>1.0-beta-1</version>
-            </plugin>
-            
+            </plugin>-->
             <plugin>
                <groupId>org.eclipse.m2e</groupId>
                <artifactId>lifecycle-mapping</artifactId>
-               <version>1.0.0</version>
                <configuration>
-                  <lifecycleMappingMetadata>
-                     <pluginExecutions>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.apache.maven.plugins</groupId>
-                              <artifactId>maven-dependency-plugin</artifactId>
-                              <versionRange>[2.0,)</versionRange>
-                              <goals>
-                                 <goal>copy</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.apache.maven.plugins</groupId>
-                              <artifactId>maven-javadoc-plugin</artifactId>
-                              <versionRange>[2.8,)</versionRange>
-                              <goals>
-                                 <goal>javadoc</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.apache.maven.plugins</groupId>
-                              <artifactId>maven-antrun-plugin</artifactId>
-                              <versionRange>[1.7,)</versionRange>
-                              <goals>
-                                 <goal>run</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.codehaus.mojo</groupId>
-                              <artifactId>exec-maven-plugin</artifactId>
-                              <versionRange>[1.2.1,)</versionRange>
-                              <goals>
-                                 <goal>java</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.scala-tools</groupId>
-                              <artifactId>maven-scala-plugin</artifactId>
-                              <versionRange>[2.15.2,)</versionRange>
-                              <goals>
-                                 <goal>testCompile</goal>
-                                 <goal>compile</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.codehaus.mojo</groupId>
-                              <artifactId>ideauidesigner-maven-plugin</artifactId>
-                              <versionRange>[1.0-beta-1,)</versionRange>
-                              <goals>
-                                 <goal>javac2</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                     </pluginExecutions>
-                  </lifecycleMappingMetadata>
-               </configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.0,)</versionRange>
+                    <goals>
+                      <goal>copy</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <versionRange>[2.8,)</versionRange>
+                    <goals>
+                      <goal>javadoc</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <versionRange>[1.7,)</versionRange>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <versionRange>[1.2.1,)</versionRange>
+                    <goals>
+                      <goal>java</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.scala-tools</groupId>
+                    <artifactId>maven-scala-plugin</artifactId>
+                    <versionRange>[2.15.2,)</versionRange>
+                    <goals>
+                      <goal>testCompile</goal>
+                      <goal>compile</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>ideauidesigner-maven-plugin</artifactId>
+                    <versionRange>[1.0-beta-1,)</versionRange>
+                    <goals>
+                      <goal>javac2</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
             </plugin>
-            <plugin>
-               <groupId>org.jboss.maven.plugins</groupId>
-               <artifactId>maven-injection-plugin</artifactId>
-               <version>1.0.2</version>
-            </plugin>
-            <plugin>
+            <!--<plugin>
                <groupId>org.mortbay.jetty</groupId>
                <artifactId>jetty-maven-plugin</artifactId>
-               <version>8.0.0.M3</version>
-            </plugin>
+            </plugin>-->
             <plugin>
                <groupId>org.jacoco</groupId>
                <artifactId>jacoco-maven-plugin</artifactId>
-               <version>${version.jacoco}</version>
                <configuration>
-                  <includes>
-                     <include>org.infinispan.*</include>
-                  </includes>
-               </configuration>
+            <includes>
+              <include>org.infinispan.*</include>
+            </includes>
+          </configuration>
             </plugin>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
          </plugins>
       </pluginManagement>
       <plugins>
          <plugin>
             <artifactId>maven-remote-resources-plugin</artifactId>
-            <version>1.1</version>
-            <executions>
+            <!--<executions>
                <execution>
                   <id>attach-license</id>
                   <goals>
@@ -1286,7 +1203,7 @@
                      </resourceBundles>
                   </configuration>
                </execution>
-            </executions>
+            </executions>-->
          </plugin>
          <plugin>
             <groupId>org.apache.felix</groupId>
@@ -1303,7 +1220,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.7</version>
             <executions>
                <execution>
                   <id>copy_serialized_metadata</id>
@@ -1324,7 +1240,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.0</version>
             <configuration>
                <source>1.6</source>
                <target>1.6</target>
@@ -1336,7 +1251,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-eclipse-plugin</artifactId>
-            <version>2.7</version>
             <configuration>
                <downloadSources>true</downloadSources>
                <buildOutputDirectory>${basedir}/eclipse-output</buildOutputDirectory>
@@ -1346,7 +1260,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-idea-plugin</artifactId>
-            <version>2.2</version>
             <configuration>
                <downloadSources>true</downloadSources>
             </configuration>
@@ -1354,7 +1267,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
-            <version>2.4</version>
             <executions>
                <execution>
                   <id>build-test-jar</id>
@@ -1392,18 +1304,11 @@
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-release-plugin</artifactId>
-            <version>2.2.2</version>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>
-            <version>2.6</version>
             <configuration>
-               <encoding>UTF-8</encoding>
-            </configuration>
+          <encoding>UTF-8</encoding>
+        </configuration>
          </plugin>
-         
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
@@ -1413,31 +1318,32 @@
                <forkMode>none</forkMode>
                <groups>${defaultTestGroup}</groups>
                <systemProperties>
-                  <property>
-                     <name>infinispan.test.jgroups.protocol</name>
-                     <value>${infinispan.test.jgroups.protocol}</value>
-                  </property>
-                  <property>
-                     <name>jgroups.bind_addr</name>
-                     <value>127.0.0.1</value>
-                  </property>
-                  <property>
-                     <name>java.net.preferIPv4Stack</name>
-                     <value>true</value>
-                  </property>
-                  <property>
-                     <name>infinispan.unsafe.allow_jdk8_chm</name>
-                     <value>true</value>
-                  </property>
-               </systemProperties>
+            <property>
+              <name>infinispan.test.jgroups.protocol</name>
+              <value>${infinispan.test.jgroups.protocol}</value>
+            </property>
+            <property>
+              <name>jgroups.bind_addr</name>
+              <value>127.0.0.1</value>
+            </property>
+            <property>
+              <name>java.net.preferIPv4Stack</name>
+              <value>true</value>
+            </property>
+            <property>
+              <name>infinispan.unsafe.allow_jdk8_chm</name>
+              <value>true</value>
+            </property>
+          </systemProperties>
                <trimStackTrace>false</trimStackTrace>
                <properties>
-                  <property>
-                     <name>listener</name>
-                     <value>${testNGListener}</value>
-                  </property>
-               </properties>
+            <property>
+              <name>listener</name>
+              <value>${testNGListener}</value>
+            </property>
+          </properties>
                <argLine>-Xmx1024m -XX:MaxPermSize=1024m</argLine>
+               
             </configuration>
          </plugin>
          
@@ -1445,29 +1351,31 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
-               <execution>
-                  <id>serialize_component_metadata</id>
-                  <phase>process-classes</phase>
-                  <goals>
-                     <goal>java</goal>
-                  </goals>
-                  <configuration>
-                     <skip>${module.skipComponentMetaDataProcessing}</skip>
-                     <mainClass>org.infinispan.factories.components.ComponentMetadataPersister</mainClass>
-                     <arguments>
-                        <argument>${project.build.outputDirectory}</argument>
-                        <argument>${basedir}/src/main/resources/${project.artifactId}-component-metadata.dat</argument>
-                     </arguments>
-                     <systemProperties>
-                        <systemProperty>
-                           <key>infinispan.isCoreModule</key>
-                           <value>${module.metadata.isCoreModule}</value>
-                        </systemProperty>
-                     </systemProperties>
-                  </configuration>
-               </execution>
-            </executions>
+          <execution>
+            <id>serialize_component_metadata</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <skip>${module.skipComponentMetaDataProcessing}</skip>
+              <mainClass>org.infinispan.factories.components.ComponentMetadataPersister</mainClass>
+              <arguments>
+                <argument>${project.build.outputDirectory}</argument>
+                <argument>${basedir}/src/main/resources/${project.artifactId}-component-metadata.dat</argument>
+              </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>infinispan.isCoreModule</key>
+                  <value>${module.metadata.isCoreModule}</value>
+                </systemProperty>
+              </systemProperties>
+            </configuration>
+          </execution>
+        </executions>
          </plugin>
+         
+         
       </plugins>
    </build>
    <reporting>
@@ -1477,18 +1385,18 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
             
-            <version>2.7.1</version>
+            <version>2.5-redhat-1</version>
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-report-plugin</artifactId>
-            <version>2.12.2</version>
+            <version>2.11-redhat-1</version>
          </plugin>
          
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
-            <version>2.5.2</version>
+            <version>2.2-redhat-1</version>
             <configuration>
                <onlyAnalyze>org.infinispan.*</onlyAnalyze>
                <xmlOutput>true</xmlOutput>
@@ -1541,7 +1449,6 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-enforcer-plugin</artifactId>
-                  <version>1.0</version>
                   <executions>
                      <execution>
                         <id>enforce-java</id>
@@ -1565,7 +1472,6 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-source-plugin</artifactId>
-                  <version>${version.maven.source}</version>
                   <executions>
                      <execution>
                         <id>attach-sources</id>
@@ -1637,7 +1543,6 @@
          
          <id>useOlderLuceneVersion</id>
          <activation>
-            <activeByDefault>false</activeByDefault>
          </activation>
          <properties>
             <version.lucene>2.9.4</version.lucene>
@@ -1646,7 +1551,6 @@
       <profile>
          <id>nonParallel</id>
          <activation>
-            <activeByDefault>false</activeByDefault>
          </activation>
          <properties>
             <infinispan.test.parallel.threads>1</infinispan.test.parallel.threads>
@@ -1656,7 +1560,6 @@
       <profile>
          <id>traceTests</id>
          <activation>
-            <activeByDefault>false</activeByDefault>
          </activation>
          <build>
             <plugins>
@@ -1708,7 +1611,6 @@
          <id>coverage</id>
 
          <activation>
-            <activeByDefault>false</activeByDefault>
          </activation>
 
          <properties>
@@ -1824,7 +1726,6 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-antrun-plugin</artifactId>
-                  <version>1.7</version>
                   <executions>
                      <execution>
                         <phase>install</phase>
@@ -1989,4 +1890,5 @@
       </profile>
 
    </profiles>
+<!-- Modified by POM Artifact-Version Manipulator version 1.3.2-redhat-1-eap (71400e6) -->
 </project>
