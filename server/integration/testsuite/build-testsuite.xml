@@ -141,6 +141,10 @@
         <transform in="clustered.xml" out="testsuite/distributed-with-indexing.xml"
                    modifyInfinispan="${infinispan.parts}/indexing-distributed.xml"
                    filtering="true"/>
+        <transform in="clustered.xml" out="testsuite/replicated-with-string-keyed-jdbc-store.xml"
+                   modifyInfinispan="${infinispan.parts}/replicated-with-string-keyed-jdbc-store.xml"
+                   modifyDatasources="${other.parts}/datasources.xml"
+                   filtering="true"/>
         <transform in="standalone.xml" out="testsuite/standalone-leveldb-local.xml"
                    modifyInfinispan="${infinispan.parts}/leveldb-local.xml"
                    filtering="true"/>
@@ -249,6 +253,7 @@
         <attribute name="in"/>
         <attribute name="out"/>
         <attribute name="modifyInfinispan" default="false"/>
+        <attribute name="modifyDatasources" default="false"/>
         <attribute name="modifyThreads" default="false"/>
         <attribute name="modifyStack" default="false"/>
         <attribute name="modifyRelay" default="false"/>
@@ -267,6 +272,7 @@
         <sequential>
             <xslt in="@{transformDir}/@{in}" out="@{transformDir}/@{in}-transformed" style="@{templateFile}">
                 <param name="modifyInfinispan" expression="@{modifyInfinispan}"/>
+                <param name="modifyDatasources" expression="@{modifyDatasources}"/>
                 <param name="modifyThreads" expression="@{modifyThreads}"/>
                 <param name="modifyStack" expression="@{modifyStack}"/>
                 <param name="modifyRelay" expression="@{modifyRelay}"/>

@@ -205,7 +205,7 @@
         <transport.stack>-Djboss.default.jgroups.stack=${default.transport.stack}</transport.stack>
 
         <jvm.ip.stack>-Djava.net.preferIPv4Stack=true</jvm.ip.stack>
-        <server.jvm.args>${jvm.ip.stack} ${jvm.memory.args} ${transport.stack} ${jvm.x64.args}</server.jvm.args>
+        <server.jvm.args>${jvm.ip.stack} ${jvm.memory.args} ${transport.stack} ${jvm.x64.args} -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</server.jvm.args>
         <log4j.configuration>log4j.xml</log4j.configuration>
         <suite.manual.phase>test</suite.manual.phase>
         <suite.rollups.manual.phase>none</suite.rollups.manual.phase>
