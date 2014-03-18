@@ -99,6 +99,14 @@
          <maven-resource group="com.google.protobuf" artifact="protobuf-java" />
       </module-def>
 
+      <module-def name="com.mysql" src="${infinispan.server.modules.dir}">
+         <maven-resource group="mysql" artifact="mysql-connector-java" />
+      </module-def>
+
+      <module-def name="org.postgresql" src="${infinispan.server.modules.dir}">
+         <maven-resource group="postgresql" artifact="postgresql" />
+      </module-def>
+
       <module-def name="com.jboss.datagrid" src="${infinispan.server.modules.dir}" />
 
       <module-def name="javax.activation.api" src="${infinispan.server.modules.dir}">

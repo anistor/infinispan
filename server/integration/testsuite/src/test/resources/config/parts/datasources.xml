@@ -1,0 +1,40 @@
+<subsystem xmlns="urn:jboss:domain:datasources:1.1">
+   <datasources>
+      <datasource jndi-name="java:jboss/datasources/JdbcDS" pool-name="JdbcDS" enabled="true" use-java-context="true">
+         <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</connection-url>
+         <driver>h2</driver>
+         <security>
+            <user-name>sa</user-name>
+            <password>sa</password>
+         </security>
+      </datasource>
+      <datasource jndi-name="java:jboss/datasources/JDGDatasource" pool-name="JDGDatasource" enabled="true" use-java-context="true">
+         <connection-url>jdbc:mysql://localhost:3306/jdg?useUnicode=yes&amp;characterEncoding=UTF-8</connection-url>
+         <driver>mysql</driver>
+         <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+         <security>
+            <user-name>root</user-name>
+            <password>root</password>
+         </security>
+      </datasource>
+      <datasource jndi-name="java:jboss/datasources/JDGDatasource2" pool-name="JDGDatasource2" enabled="true" use-java-context="true">
+         <connection-url>jdbc:postgresql://localhost/testdb</connection-url>
+         <driver>postgresql</driver>
+         <security>
+            <user-name>root</user-name>
+            <password>root</password>
+         </security>
+      </datasource>
+      <drivers>
+         <driver name="mysql" module="com.mysql">
+            <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+         </driver>
+         <driver name="postgresql" module="org.postgresql">
+            <driver-class>org.postgresql.Driver</driver-class>
+         </driver>
+         <driver name="h2" module="com.h2database.h2">
+            <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+         </driver>
+      </drivers>
+   </datasources>
+</subsystem>

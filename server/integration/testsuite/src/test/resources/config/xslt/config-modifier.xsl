@@ -4,12 +4,14 @@
                 xmlns:p="urn:jboss:domain:1.4"
                 xmlns:jgroups="urn:jboss:domain:jgroups:1.2"
                 xmlns:core="urn:infinispan:server:core:6.0"
+                xmlns:datasources="urn:jboss:domain:datasources:1.1"
                 xmlns:threads="urn:jboss:domain:threads:1.1"
                 xmlns:endpoint="urn:infinispan:server:endpoint:6.0">
     <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
 
     <!-- Parameter declarations with defaults set -->
     <xsl:param name="modifyInfinispan">false</xsl:param>
+    <xsl:param name="modifyDatasources">false</xsl:param>
     <xsl:param name="modifyThreads">false</xsl:param>
     <xsl:param name="modifyStack">false</xsl:param>
     <xsl:param name="modifyRelay">false</xsl:param>
@@ -38,6 +40,15 @@
         </xsl:if>
         <xsl:if test="$modifyInfinispan != 'false'">
             <xsl:copy-of select="document($modifyInfinispan)"/>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="datasources:subsystem">
+        <xsl:if test="$modifyDatasources = 'false'">
+            <xsl:call-template name="copynode"/>
+        </xsl:if>
+        <xsl:if test="$modifyDatasources != 'false'">
+            <xsl:copy-of select="document($modifyDatasources)"/>
         </xsl:if>
     </xsl:template>
 

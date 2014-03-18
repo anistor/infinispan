@@ -1,0 +1,28 @@
+        <subsystem xmlns="urn:infinispan:server:core:6.0" >
+            <cache-container 
+                name="clustered"
+                default-cache="testcache">
+                <transport
+                    stack="${jboss.default.jgroups.stack:udp}"
+                    executor="infinispan-transport"
+                    lock-timeout="240000"/>
+                <replicated-cache
+                    name="testcache"
+                    mode="ASYNC"
+                    start="EAGER">
+                    <locking isolation="READ_COMMITTED" acquire-timeout="20000" concurrency-level="500" striping="false"/>
+                    <transaction mode="NONE" />
+                    <string-keyed-jdbc-store datasource="java:jboss/datasources/JDGDatasource" passivation="false" preload="true" purge="false" shared="false">
+                        <string-keyed-table prefix="qs">
+                            <id-column name="id" type="VARCHAR(255)"/>
+                            <data-column name="datum" type="BLOB(2000)"/>
+                            <!--<data-column name="datum" type="BYTEA"/>-->
+                            <timestamp-column name="version" type="BIGINT"/>
+                        </string-keyed-table>
+                       <write-behind modification-queue-size="1024" shutdown-timeout="25000" flush-lock-timeout="15000" thread-pool-size="5" />
+                    </string-keyed-jdbc-store>
+                    <expiration interval="10000" />
+                </replicated-cache>
+            </cache-container>
+            <cache-container name="security"/>
+        </subsystem>

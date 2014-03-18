@@ -95,7 +95,15 @@ public class TableManipulation implements Cloneable {
    public void createTable(Connection conn) throws PersistenceException {
       // removed CONSTRAINT clause as this causes problems with some databases, like Informix.
       assertMandatoryElementsPresent();
+
+      String idCharacterSetAndCollation = "";
+      if (getDatabaseType() == DatabaseType.MYSQL && config.idColumnType().toUpperCase().startsWith("VARCHAR")) {
+         idCharacterSetAndCollation = " CHARACTER SET utf8 COLLATE utf8_unicode_ci ";
+         //todo also check connection url contains "useUnicode=yes&characterEncoding=UTF-8"
+      }
+
       String createTableDdl = "CREATE TABLE " + getTableName() + "(" + config.idColumnName() + " " + config.idColumnType()
+            + idCharacterSetAndCollation
             + " NOT NULL, " + config.dataColumnName() + " " + config.dataColumnType() + ", "
             + config.timestampColumnName() + " " + config.timestampColumnType() +
             ", PRIMARY KEY (" + config.idColumnName() + "))";
