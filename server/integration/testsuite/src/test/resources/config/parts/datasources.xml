@@ -8,7 +8,19 @@
             <password>sa</password>
          </security>
       </datasource>
+      <datasource jndi-name="java:jboss/datasources/JDGDatasource" pool-name="JDGDatasource" enabled="true" use-java-context="true">
+         <connection-url>jdbc:mysql://localhost:3306/jdg</connection-url>
+         <driver>com.mysql</driver>
+         <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+         <security>
+            <user-name>root</user-name>
+            <password>root</password>
+         </security>
+      </datasource>
       <drivers>
+         <driver name="com.mysql" module="com.mysql">
+            <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+         </driver>
          <driver name="h2" module="com.h2database.h2">
             <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
          </driver>

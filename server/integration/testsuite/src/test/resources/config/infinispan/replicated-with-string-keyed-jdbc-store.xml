@@ -12,7 +12,7 @@
                     start="EAGER">
                     <locking isolation="READ_COMMITTED" acquire-timeout="20000" concurrency-level="500" striping="false"/>
                     <transaction mode="NONE" />
-                    <string-keyed-jdbc-store datasource="java:jboss/datasources/JdbcDS" passivation="false" preload="true" purge="false" shared="false">
+                    <string-keyed-jdbc-store datasource="java:jboss/datasources/JDGDatasource" passivation="false" preload="true" purge="false" shared="false">
                         <string-keyed-table prefix="qs">
                             <id-column name="id" type="VARCHAR(255)"/>
                             <data-column name="datum" type="BLOB(2000)"/>
