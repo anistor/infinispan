@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 @WithRunningServer("remote-cache-keySet-with-string-keyed-jdbc-store")
 public class RemoteKeySetTest {
 
-   private static final int NUM_KEYS = 200;
+   private static final int NUM_KEYS = 2000;
 
    @InfinispanResource("remote-cache-keySet-with-string-keyed-jdbc-store")
    private RemoteInfinispanServer server;
