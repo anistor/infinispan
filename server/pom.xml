@@ -24,6 +24,7 @@
          <artifactId>scala-library</artifactId>
       </dependency>
 
+      <!--
       <dependency>
          <groupId>${project.groupId}</groupId>
          <artifactId>infinispan-core</artifactId>
@@ -31,5 +32,6 @@
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
+      -->
    </dependencies>
 </project>

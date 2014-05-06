@@ -19,12 +19,14 @@
          <groupId>${project.groupId}</groupId>
          <artifactId>infinispan-client-hotrod</artifactId>
       </dependency>
+      <!--
       <dependency>
          <groupId>${project.groupId}</groupId>
          <artifactId>infinispan-client-hotrod</artifactId>
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
+      -->
       <dependency>
          <groupId>${project.groupId}</groupId>
          <artifactId>infinispan-core</artifactId>
@@ -34,12 +36,14 @@
          <artifactId>infinispan-server-hotrod</artifactId>
          <optional>true</optional>
       </dependency>
+      <!--
       <dependency>
          <groupId>${project.groupId}</groupId>
          <artifactId>infinispan-server-hotrod</artifactId>
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
+      -->
    </dependencies>
 
    <build>

@@ -19,6 +19,7 @@
          <artifactId>infinispan-server-core</artifactId>
       </dependency>
 
+      <!--
       <dependency>
          <groupId>${project.groupId}</groupId>
          <artifactId>infinispan-server-core</artifactId>
@@ -30,6 +31,7 @@
          <artifactId>memcached</artifactId>
          <scope>test</scope>
       </dependency>
+      -->
    </dependencies>
 
    <build>
