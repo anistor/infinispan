@@ -1,9 +1,14 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <artifactId>jboss-parent</artifactId>
+      <groupId>org.jboss</groupId>
+      <version>11-redhat-1</version>
+   </parent>
    <groupId>org.infinispan</groupId>
    <artifactId>infinispan-parent</artifactId>
-   <version>5.2.10.Final</version>
+   <version>5.2.10.Final-redhat-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>Infinispan Common Parent</name>
    <description>Infinispan common parent POM module</description>
@@ -1018,43 +1023,6 @@
          <scope>test</scope>
       </dependency>
    </dependencies>
-   <repositories>
-      <repository>
-         <releases>
-            <enabled>true</enabled>
-         </releases>
-         <snapshots>
-            <enabled>true</enabled>
-         </snapshots>
-         <id>jboss-public-repository</id>
-         <name>JBoss Public Repository and Proxy for third party repositories</name>
-         <url>https://repository.jboss.org/nexus/content/groups/public</url>
-      </repository>
-   </repositories>
-   <pluginRepositories>
-      <pluginRepository>
-         <releases>
-            <enabled>true</enabled>
-         </releases>
-         <snapshots>
-            <enabled>true</enabled>
-         </snapshots>
-         <id>jboss-public-plugin-repository</id>
-         <name>JBoss Public Plugin Repository and Proxy for third party plugin repositories</name>
-         <url>https://repository.jboss.org/nexus/content/groups/public</url>
-      </pluginRepository>
-      <pluginRepository>
-         <releases>
-            <enabled>true</enabled>
-         </releases>
-         <snapshots>
-            <enabled>true</enabled>
-         </snapshots>
-         <id>jboss-public-thirdparty-snapshots</id>
-         <name>JBoss Public third party snapshots plugin repositories</name>
-         <url>https://repository.jboss.org/nexus/content/groups/public-thirdparty-snapshots</url>
-      </pluginRepository>
-   </pluginRepositories>
    <build>
       <directory>${buildDirectory}</directory>
       <finalName>${project.artifactId}</finalName>
@@ -1074,54 +1042,7 @@
             </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-clean-plugin</artifactId>
-               <version>2.5</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-install-plugin</artifactId>
-               <version>2.4</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-help-plugin</artifactId>
-                <version>2.1.1</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-deploy-plugin</artifactId>
-               <version>2.7</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.felix</groupId>
-               <artifactId>maven-bundle-plugin</artifactId>
-               <version>${version.maven.bundle}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-assembly-plugin</artifactId>
-               <version>2.4</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-dependency-plugin</artifactId>
-               <version>2.6</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-failsafe-plugin</artifactId>
-               <version>${version.maven.surefire}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-javadoc-plugin</artifactId>
-               <version>2.9</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-pmd-plugin</artifactId>
-               
-               <version>2.7.1</version>
                <configuration>
                   <minimumTokens>100</minimumTokens>
                   <targetJdk>1.6</targetJdk>
@@ -1131,12 +1052,7 @@
             </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-surefire-plugin</artifactId>
-               <version>${version.maven.surefire}</version>
-            </plugin>
-            <plugin>
                <artifactId>maven-war-plugin</artifactId>
-               <version>2.1.1</version>
                <configuration>
                   <attachClasses>false</attachClasses>
                </configuration>
@@ -1156,11 +1072,9 @@
                <artifactId>ideauidesigner-maven-plugin</artifactId>
                <version>1.0-beta-1</version>
             </plugin>
-            
             <plugin>
                <groupId>org.eclipse.m2e</groupId>
                <artifactId>lifecycle-mapping</artifactId>
-               <version>1.0.0</version>
                <configuration>
                   <lifecycleMappingMetadata>
                      <pluginExecutions>
@@ -1248,11 +1162,6 @@
                </configuration>
             </plugin>
             <plugin>
-               <groupId>org.jboss.maven.plugins</groupId>
-               <artifactId>maven-injection-plugin</artifactId>
-               <version>1.0.2</version>
-            </plugin>
-            <plugin>
                <groupId>org.mortbay.jetty</groupId>
                <artifactId>jetty-maven-plugin</artifactId>
                <version>8.0.0.M3</version>
@@ -1304,7 +1213,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.7</version>
             <executions>
                <execution>
                   <id>copy_serialized_metadata</id>
@@ -1325,7 +1233,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.0</version>
             <configuration>
                <source>1.6</source>
                <target>1.6</target>
@@ -1337,7 +1244,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-eclipse-plugin</artifactId>
-            <version>2.7</version>
             <configuration>
                <downloadSources>true</downloadSources>
                <buildOutputDirectory>${basedir}/eclipse-output</buildOutputDirectory>
@@ -1347,7 +1253,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-idea-plugin</artifactId>
-            <version>2.2</version>
             <configuration>
                <downloadSources>true</downloadSources>
             </configuration>
@@ -1355,7 +1260,6 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
-            <version>2.4</version>
             <executions>
                <execution>
                   <id>build-test-jar</id>
@@ -1394,12 +1298,10 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>2.2.2</version>
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>
-            <version>2.6</version>
             <configuration>
                <encoding>UTF-8</encoding>
             </configuration>
@@ -1471,33 +1373,6 @@
          </plugin>
       </plugins>
    </build>
-   <reporting>
-      <plugins>
-         
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-pmd-plugin</artifactId>
-            
-            <version>2.7.1</version>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-report-plugin</artifactId>
-            <version>2.12.2</version>
-         </plugin>
-         
-         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>findbugs-maven-plugin</artifactId>
-            <version>2.5.2</version>
-            <configuration>
-               <onlyAnalyze>org.infinispan.*</onlyAnalyze>
-               <xmlOutput>true</xmlOutput>
-               <xmlOutputDirectory>target</xmlOutputDirectory>
-            </configuration>
-         </plugin>
-      </plugins>
-   </reporting>
    <profiles>
       <profile>
          <id>distribution</id>
@@ -1542,7 +1417,6 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-enforcer-plugin</artifactId>
-                  <version>1.0</version>
                   <executions>
                      <execution>
                         <id>enforce-java</id>
@@ -1566,7 +1440,6 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-source-plugin</artifactId>
-                  <version>${version.maven.source}</version>
                   <executions>
                      <execution>
                         <id>attach-sources</id>
@@ -1825,7 +1698,6 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-antrun-plugin</artifactId>
-                  <version>1.7</version>
                   <executions>
                      <execution>
                         <phase>install</phase>
