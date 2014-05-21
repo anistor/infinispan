@@ -1,10 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-server-parent</artifactId>
-      <version>5.2.6.Final</version>
+      <version>5.2.6.Final-redhat-1</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
@@ -19,17 +19,6 @@
          <artifactId>infinispan-server-core</artifactId>
       </dependency>
 
-      <dependency>
-         <groupId>${project.groupId}</groupId>
-         <artifactId>infinispan-server-core</artifactId>
-         <type>test-jar</type>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>spy</groupId>
-         <artifactId>memcached</artifactId>
-         <scope>test</scope>
-      </dependency>
    </dependencies>
 
    <build>
@@ -39,20 +28,16 @@
 
       <plugins>
          <plugin>
-            <groupId>org.scala-tools</groupId>
-            <artifactId>maven-scala-plugin</artifactId>
-         </plugin>
-         <plugin>
             <groupId>org.apache.felix</groupId>
             <artifactId>maven-bundle-plugin</artifactId>
             <configuration>
-               <instructions>
-                  <Export-Package>
-                     ${project.groupId}.server.memcached.*;version=${project.version};-split-package:=error
-                  </Export-Package>
-               </instructions>
-            </configuration>
+          <instructions>
+            <Export-Package>${project.groupId}.server.memcached.*;version=${project.version};-split-package:=error</Export-Package>
+          </instructions>
+        </configuration>
          </plugin>
+         
       </plugins>
    </build>
+<!-- Modified by POM Artifact-Version Manipulator version 1.2.4-redhat-1-eap (722ee63) -->
 </project>

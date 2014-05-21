@@ -1,19 +1,18 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-server-parent</artifactId>
-      <version>5.2.6.Final</version>
+      <version>5.2.6.Final-redhat-1</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
 
    <artifactId>infinispan-server-rest</artifactId>
    <packaging>war</packaging>
    <name>Infinispan REST Server</name>
-   <description>REST interface for Infinispan, packaged as a WAR file for deployment in a servlet container
-   </description>
+   <description>REST interface for Infinispan, packaged as a WAR file for deployment in a servlet container</description>
 
    <build>
       <finalName>infinispan</finalName>
@@ -22,20 +21,13 @@
 
       <plugins>
          <plugin>
-            <groupId>org.scala-tools</groupId>
-            <artifactId>maven-scala-plugin</artifactId>
-         </plugin>
-         <plugin>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty-maven-plugin</artifactId>
-         </plugin>
-         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-war-plugin</artifactId>
             <configuration>
-               
-               <attachClasses>true</attachClasses>
-            </configuration>
+          <attachClasses>true</attachClasses>
+        </configuration>
          </plugin>
+         
       </plugins>
 
    </build>
@@ -57,21 +49,14 @@
       </dependency>
 
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
+         <groupId>org.jboss.spec.javax.servlet</groupId>
+         <artifactId>jboss-servlet-api_3.0_spec</artifactId>
          <scope>provided</scope>
       </dependency>
 
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>infinispan-server-core</artifactId>
-      </dependency>
-
-      
-      <dependency>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty-embedded</artifactId>
-         <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -81,4 +66,5 @@
       </dependency>
 
    </dependencies>
+<!-- Modified by POM Artifact-Version Manipulator version 1.2.4-redhat-1-eap (722ee63) -->
 </project>

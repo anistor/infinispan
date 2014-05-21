@@ -21,7 +21,7 @@ package org.infinispan.loaders.jdbc.configuration;
 import org.infinispan.configuration.BuiltBy;
 import org.infinispan.loaders.jdbc.AbstractJdbcCacheStoreConfig;
 import org.infinispan.loaders.jdbc.connectionfactory.ConnectionFactory;
-import org.infinispan.loaders.jdbc.connectionfactory.PooledConnectionFactory;
+//import org.infinispan.loaders.jdbc.connectionfactory.PooledConnectionFactory;
 
 @BuiltBy(PooledConnectionFactoryConfigurationBuilder.class)
 public class PooledConnectionFactoryConfiguration implements ConnectionFactoryConfiguration, LegacyConnectionFactoryAdaptor {
@@ -55,7 +55,8 @@ public class PooledConnectionFactoryConfiguration implements ConnectionFactoryCo
 
    @Override
    public Class<? extends ConnectionFactory> connectionFactoryClass() {
-      return PooledConnectionFactory.class;
+      //return PooledConnectionFactory.class;
+      return ConnectionFactory.class;
    }
 
    @Override
