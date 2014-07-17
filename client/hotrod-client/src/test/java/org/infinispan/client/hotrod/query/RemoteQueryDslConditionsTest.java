@@ -621,7 +621,7 @@ public class RemoteQueryDslConditionsTest extends SingleCacheManagerTest {
       assertEquals(3, list.size());
    }
 
-   @Test(enabled = false, expectedExceptions = HotRodClientException.class, expectedExceptionsMessageRegExp = ".*HQLLUCN000005:.*", description = "see https://issues.jboss.org/browse/ISPN-4423")
+   @Test(expectedExceptions = HotRodClientException.class, expectedExceptionsMessageRegExp = ".*HQLLUCN000005:.*")
    public void testInvalidEmbeddedAttributeQuery() throws Exception {
       QueryFactory qf = Search.getQueryFactory(remoteCache);
 
