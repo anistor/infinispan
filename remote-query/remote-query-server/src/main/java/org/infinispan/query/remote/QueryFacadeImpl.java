@@ -168,9 +168,10 @@ public class QueryFacadeImpl implements QueryFacade {
                      return NumericFieldBridge.INT_FIELD_BRIDGE;
                   case STRING:
                   case BYTES:
+                     return new NullEncodingTwoWayFieldBridge(new TwoWayString2FieldBridgeAdaptor(StringBridge.INSTANCE), NULL_TOKEN);
                   case GROUP:
                   case MESSAGE:
-                     return new NullEncodingTwoWayFieldBridge(new TwoWayString2FieldBridgeAdaptor(StringBridge.INSTANCE), NULL_TOKEN);
+                     return null;
                }
                return null;
             }
