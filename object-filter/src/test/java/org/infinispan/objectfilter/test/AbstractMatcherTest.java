@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.infinispan.objectfilter.FilterCallback;
 import org.infinispan.objectfilter.FilterSubscription;
 import org.infinispan.objectfilter.Matcher;
 import org.infinispan.objectfilter.ObjectFilter;
@@ -16,6 +17,7 @@ import org.infinispan.objectfilter.ParsingException;
 import org.infinispan.objectfilter.test.model.Address;
 import org.infinispan.objectfilter.test.model.Person;
 import org.infinispan.objectfilter.test.model.PhoneNumber;
+import org.infinispan.query.dsl.ProjectionConstants;
 import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryFactory;
 import org.junit.Ignore;
@@ -732,6 +734,60 @@ public abstract class AbstractMatcherTest {
       assertEquals(1, result.size());
       assertEquals(1, result.get(0).length);
       assertEquals("John", result.get(0)[0]);
+   }
+
+   @Test
+   public void testProjectionOnValue() throws Exception {
+      String queryString = "select " + ProjectionConstants.VALUE + " from org.infinispan.objectfilter.test.model.Person p where p.name = 'John'";
+
+      Matcher matcher = createMatcher();
+      Object person = createPerson1();
+
+      final List<Object[]> result = new ArrayList<>();
+
+      FilterSubscription filterSubscription = matcher.registerFilter(queryString, new FilterCallback() {
+         @Override
+         public void onFilterResult(Object userContext, Object instance, Object eventType, Object[] projection, Comparable[] sortProjection) {
+            result.add(projection);
+         }
+      });
+
+      assertNotNull(filterSubscription.getProjection());
+      assertEquals(1, filterSubscription.getProjection().length);
+      assertEquals(ProjectionConstants.VALUE, filterSubscription.getProjection()[0]);
+
+      matcher.match(null, person, null);
+
+      matcher.unregisterFilter(filterSubscription);
+
+      assertTrue(person == result.get(0)[0]);
+   }
+
+   @Test
+   public void testProjectionOnKey() throws Exception {
+      String queryString = "select " + ProjectionConstants.KEY + " from org.infinispan.objectfilter.test.model.Person p where p.name = 'John'";
+
+      Matcher matcher = createMatcher();
+      Object person = createPerson1();
+
+      final List<Object[]> result = new ArrayList<>();
+
+      FilterSubscription filterSubscription = matcher.registerFilter(queryString, new FilterCallback() {
+         @Override
+         public void onFilterResult(Object userContext, Object instance, Object eventType, Object[] projection, Comparable[] sortProjection) {
+            result.add(projection);
+         }
+      });
+
+      assertNotNull(filterSubscription.getProjection());
+      assertEquals(1, filterSubscription.getProjection().length);
+      assertEquals(ProjectionConstants.VALUE, filterSubscription.getProjection()[0]);
+
+      matcher.match(null, person, null);
+
+      matcher.unregisterFilter(filterSubscription);
+
+      assertTrue(person == result.get(0)[0]);
    }
 
    @Test

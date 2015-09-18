@@ -267,7 +267,7 @@ public class ResourceDMBean implements DynamicMBean {
          Method method = getObject().getClass().getMethod(opInfo.getName(), classes);
          return method.invoke(getObject(), args);
       } catch (Exception e) {
-         throw new MBeanException(new Exception(getRootCause(e)));
+         throw new MBeanException(new Exception(getRootCause(e)));     //todo [anistor] why this wrapping?
       }
    }
 
