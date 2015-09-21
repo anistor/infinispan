@@ -2397,6 +2397,64 @@ public class QueryDslConditionsTest extends AbstractQueryDslTest {
       assertEquals("John", list.get(0)[0]);
    }
 
+   @Test(enabled = false)
+   public void testGroupBy9_() {
+      QueryFactory qf = getQueryFactory();
+      Query q = qf.from(getModelFactory().getTransactionImplClass())
+            .select(max("amount"))
+            .groupBy("accountId")
+            .having(avg("amount")).lt(150).toBuilder()
+            .orderBy("accountId")
+            .build();
+      List<Object[]> list = q.list();
+      assertEquals(1, list.size());
+      assertEquals(2, list.get(0)[0]);
+      assertEquals(149.0d, (Double) list.get(0)[1], 0.0001d);
+   }
+
+   @Test(enabled = false)
+   public void testAvgAndHaving() {
+      QueryFactory qf = getQueryFactory();
+      Query q = qf.from(getModelFactory().getTransactionImplClass())
+            .select(max("amount"))
+            .groupBy("accountId")
+            .having(avg("amount")).lt(150).toBuilder()
+            .orderBy("accountId")
+            .build();
+      List<Object[]> list = q.list();
+      assertEquals(1, list.size());
+      assertEquals(2, list.get(0)[0]);
+      assertEquals(149.0d, (Double) list.get(0)[1], 0.0001d);
+   }
+
+   @Test(enabled = false)
+   public void testCountAndHaving() {
+      QueryFactory qf = getQueryFactory();
+      Query q = qf.from(getModelFactory().getUserImplClass())
+            .select(avg("age"))
+            .groupBy("name")
+            .having(count("age")).gt(0L).toBuilder()
+            .build();
+      List<Object[]> list = q.list();
+      assertEquals(1, list.size());
+      assertEquals(1, list.get(0).length);
+      assertEquals(1L, list.get(0)[0]);  // only non-null "age"s were counted
+   }
+
+   @Test(enabled = false)
+   public void testCountAndHaving2() {
+      QueryFactory qf = getQueryFactory();
+      Query q = qf.from(getModelFactory().getTransactionImplClass())
+            .select(avg("amount"))
+            .groupBy("accountId")
+            .having(count("amount")).gt(0L).toBuilder()
+            .build();
+      List<Object[]> list = q.list();
+      assertEquals(1, list.size());
+      assertEquals(1, list.get(0).length);
+      assertEquals(1L, list.get(0)[0]);  // only non-null "age"s were counted
+   }
+
    public void testCountNull() {
       QueryFactory qf = getQueryFactory();
       Query q = qf.from(getModelFactory().getUserImplClass())
