@@ -2956,6 +2956,24 @@ public class QueryDslConditionsTest extends AbstractQueryDslTest {
       assertNull(list.get(2)[1]);
    }
 
+   @Test(enabled = false)
+   public void testTwoPhaseGroupingAndAggregationOnSameField32() {
+      QueryFactory qf = getQueryFactory();
+      Query q = qf.from(getModelFactory().getUserImplClass())
+            .select("addresses")
+            .build();
+
+      List<Object[]> list = q.list();
+      assertEquals(3, list.size());
+      assertEquals(2, list.get(0).length);
+      assertEquals(1L, list.get(0)[0]);
+      assertEquals(156L, list.get(0)[1]);
+      assertEquals(1L, list.get(1)[0]);
+      assertEquals(300L, list.get(1)[1]);
+      assertEquals(1L, list.get(2)[0]);
+      assertNull(list.get(2)[1]);
+   }
+
    /**
     * Test that 'like' accepts only % and _ as wildcards.
     */
