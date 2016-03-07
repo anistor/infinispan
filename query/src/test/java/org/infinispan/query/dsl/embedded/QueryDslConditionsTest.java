@@ -3052,4 +3052,19 @@ public class QueryDslConditionsTest extends AbstractQueryDslTest {
       List<User> list = q.list();
       assertEquals(3, list.size());
    }
+
+   @Test(enabled = false)
+   public void testExpressionsInWrongPlace() {
+      //todo also test having with min()
+      QueryFactory qf = getQueryFactory();
+      Query q = qf.from(getModelFactory().getUserImplClass())
+            .select(min("addresses.street")
+            /*, Expression.param("aaaa")*/)
+            /*.having(Expression.param("xx")).eq(10).toBuilder() */
+            /*.having("name").eq(Expression.min("age")).toBuilder()*/
+            .orderBy(min("addresses.street"))
+            /*.orderBy(Expression.param("aaaa"))*/
+            .build();
+      q.list();
+   }
 }
