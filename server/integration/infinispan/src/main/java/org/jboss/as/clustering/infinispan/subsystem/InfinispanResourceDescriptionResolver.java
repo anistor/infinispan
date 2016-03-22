@@ -219,6 +219,9 @@ public class InfinispanResourceDescriptionResolver extends SubsystemResourceDesc
         sharedAttributeResolver.put(MetricKeys.TIME_SINCE_RESET, "cache");
         sharedAttributeResolver.put(MetricKeys.VERSION, "cache");
 
+        // indexing metrics
+        sharedAttributeResolver.put(MetricKeys.HIBERNATE_SEARCH_VERSION, "cache");
+
         sharedAttributeResolver.put(MetricKeys.AVERAGE_REPLICATION_TIME, "clustered-cache");
         sharedAttributeResolver.put(MetricKeys.REPLICATION_COUNT, "clustered-cache");
         sharedAttributeResolver.put(MetricKeys.REPLICATION_FAILURES, "clustered-cache");

@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.search.stat.Statistics;
 import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
 import org.infinispan.eviction.ActivationManager;
@@ -74,8 +75,8 @@ public class CacheMetricsHandler extends AbstractRuntimeOnlyHandler {
 
     public enum CacheMetrics {
         CACHE_STATUS(MetricKeys.CACHE_STATUS, ModelType.STRING, true),
-        VERSION(MetricKeys.VERSION, ModelType.STRING, true),
-        CACHE_NAME(MetricKeys.CACHE_NAME, ModelType.STRING, true),
+        VERSION(MetricKeys.VERSION, ModelType.STRING, false),
+        CACHE_NAME(MetricKeys.CACHE_NAME, ModelType.STRING, false),
         // LockManager
         NUMBER_OF_LOCKS_AVAILABLE(MetricKeys.NUMBER_OF_LOCKS_AVAILABLE, ModelType.INT, true),
         NUMBER_OF_LOCKS_HELD(MetricKeys.NUMBER_OF_LOCKS_HELD, ModelType.INT, true),
@@ -117,7 +118,9 @@ public class CacheMetricsHandler extends AbstractRuntimeOnlyHandler {
         //backup site
         ONLINE_SITES(MetricKeys.SITES_ONLINE, ModelType.LIST, ModelType.STRING, false),
         OFFLINE_SITES(MetricKeys.SITES_OFFLINE, ModelType.LIST, ModelType.STRING, false),
-        MIXED_SITES(MetricKeys.SITES_MIXED, ModelType.LIST, ModelType.STRING, false);
+        MIXED_SITES(MetricKeys.SITES_MIXED, ModelType.LIST, ModelType.STRING, false),
+
+        HIBERNATE_SEARCH_VERSION(MetricKeys.HIBERNATE_SEARCH_VERSION, ModelType.STRING, true, true);
 
         private static final Map<String, CacheMetrics> MAP = new HashMap<String, CacheMetrics>();
 
@@ -192,6 +195,7 @@ public class CacheMetricsHandler extends AbstractRuntimeOnlyHandler {
             AdvancedCache<?, ?> aCache = cache.getAdvancedCache();
             DefaultLockManager lockManager = (DefaultLockManager) SecurityActions.getLockManager(aCache);
             RpcManagerImpl rpcManager = (RpcManagerImpl) SecurityActions.getRpcManager(aCache);
+            Statistics statistics = SecurityActions.getSearchManager(aCache).getStatistics();
             List<AsyncInterceptor> interceptors = SecurityActions.getInterceptorChain(aCache);
             ComponentRegistry registry = SecurityActions.getComponentRegistry(aCache);
             ComponentStatus status = SecurityActions.getCacheStatus(aCache);
@@ -357,7 +361,11 @@ public class CacheMetricsHandler extends AbstractRuntimeOnlyHandler {
                     }
                     break;
                 }
-                default:{
+                case HIBERNATE_SEARCH_VERSION: {
+                    result.set(statistics.getSearchVersion());
+                    break;
+                }
+                default: {
                     context.getFailureDescription().set(String.format("Unknown metric %s", metric));
                     break;
                 }

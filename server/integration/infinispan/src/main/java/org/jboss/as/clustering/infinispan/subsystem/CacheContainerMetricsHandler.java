@@ -70,7 +70,7 @@ public class CacheContainerMetricsHandler extends AbstractRuntimeOnlyHandler {
         CREATED_CACHE_COUNT(MetricKeys.CREATED_CACHE_COUNT, ModelType.INT, true, true),
         MEMBERS(MetricKeys.MEMBERS, ModelType.INT, true, true),
         CLUSTER_SIZE(MetricKeys.CLUSTER_SIZE, ModelType.INT, true, true),
-        VERSION(MetricKeys.VERSION, ModelType.INT, true, true),
+        VERSION(MetricKeys.VERSION, ModelType.INT, true, true),  //todo [anistor] should this be string? nullable?
         //backup site
         ONLINE_SITES(MetricKeys.SITES_ONLINE, ModelType.LIST, ModelType.STRING, false),
         OFFLINE_SITES(MetricKeys.SITES_OFFLINE, ModelType.LIST, ModelType.STRING, false),
@@ -103,20 +103,20 @@ public class CacheContainerMetricsHandler extends AbstractRuntimeOnlyHandler {
         final AttributeDefinition definition;
         final boolean clustered;
 
-        private CacheManagerMetrics(final AttributeDefinition definition, final boolean clustered) {
+        CacheManagerMetrics(final AttributeDefinition definition, final boolean clustered) {
             this.definition = definition;
             this.clustered = clustered;
         }
 
-        private CacheManagerMetrics(String attributeName, ModelType type, boolean allowNull) {
+        CacheManagerMetrics(String attributeName, ModelType type, boolean allowNull) {
             this(attributeName, type, allowNull, false);
         }
 
-        private CacheManagerMetrics(String attributeName, ModelType type, boolean allowNull, boolean clustered) {
+        CacheManagerMetrics(String attributeName, ModelType type, boolean allowNull, boolean clustered) {
             this(new SimpleAttributeDefinitionBuilder(attributeName, type, allowNull).setStorageRuntime().build(), clustered);
         }
 
-        private CacheManagerMetrics(String attributeName, ModelType outerType, ModelType innerType, boolean allowNull) {
+        CacheManagerMetrics(String attributeName, ModelType outerType, ModelType innerType, boolean allowNull) {
             if (outerType != ModelType.LIST) {
                 throw new IllegalArgumentException();
             }

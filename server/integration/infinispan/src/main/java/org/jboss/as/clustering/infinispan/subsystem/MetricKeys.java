@@ -89,4 +89,17 @@ public class MetricKeys {
     public static final String SITES_ONLINE = "sites-online";
     public static final String SITES_OFFLINE = "sites-offline";
     public static final String SITES_MIXED = "sites-mixed";
+    // Indexing Metrics
+    public static final String HIBERNATE_SEARCH_STATISTICS_ENABLED = "hibernate-search-statistics-enabled";
+    public static final String HIBERNATE_SEARCH_VERSION = "hibernate-search-version";
+    public static final String HIBERNATE_SEARCH_QUERY_EXECUTION_COUNT = "hibernate-search-query-execution-count";
+    public static final String HIBERNATE_SEARCH_QUERY_TOTAL_TIME = "hibernate-search-query-total-time";
+    public static final String HIBERNATE_SEARCH_QUERY_EXECUTION_MAX_TIME = "hibernate-search-query-execution-max-time";
+    public static final String HIBERNATE_SEARCH_QUERY_EXECUTION_AVG_TIME = "hibernate-search-query-execution-avg-time";
+    public static final String HIBERNATE_SEARCH_QUERY_EXECUTION_MAX_TIME_QUERY_STRING = "hibernate-search-query-execution-max-time-query-string";
+    public static final String HIBERNATE_SEARCH_OBJECT_LOADING_TOTAL_TIME = "hibernate-search-object-loading-total-time";
+    public static final String HIBERNATE_SEARCH_OBJECT_LOADING_EXECUTION_MAX_TIME = "hibernate-search-object-loading-execution-max-time";
+    public static final String HIBERNATE_SEARCH_OBJECT_LOADING_EXECUTION_AVG_TIME = "hibernate-search-object-loading-execution-avg-time";
+    public static final String HIBERNATE_SEARCH_OBJECTS_LOADED_COUNT = "hibernate-search-objects-loaded-count";
+    public static final String HIBERNATE_SEARCH_INDEXED_ENTITIES_COUNT = "hibernate-search-indexed-entities-count";
 }
