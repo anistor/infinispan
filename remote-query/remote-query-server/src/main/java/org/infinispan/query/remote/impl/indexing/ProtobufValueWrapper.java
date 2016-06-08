@@ -29,6 +29,7 @@ public final class ProtobufValueWrapper implements WrappedBytes {
    // The protobuf encoded payload
    private final byte[] binary;
 
+   //TODO [anistor] This cached hashCode is not useful for values (~16 bytes penalty), only good for keys.
    private int hashCode = 0;
 
    // The Descriptor of the message (if it's a Message and not a primitive value). Transient field!
