@@ -59,7 +59,6 @@ public class ReplicatedConsistentHash implements ConsistentHash {
       }
       if (this.getNumSegments() != ch2.getNumSegments()) {
          throw new IllegalArgumentException("The consistent hash objects must have the same number of segments");
-
       }
 
       List<Address> unionMembers = new ArrayList<>(this.getMembers());
@@ -196,7 +195,6 @@ public class ReplicatedConsistentHash implements ConsistentHash {
    }
 
    @Override
-
    public boolean isReplicated() {
       return true;
    }
