@@ -53,6 +53,7 @@ public class AnyServerEquivalence implements Equivalence<Object> {
     @Override
     @SuppressWarnings("unchecked")
     public int compare(Object obj, Object otherObj) {
+        //todo [anistor] byte[] is not Comparable!
        return ((Comparable<Object>) obj).compareTo(otherObj);
     }
 

@@ -1,7 +1,5 @@
 package org.infinispan.profiling.testinternals;
 
-//import org.infinispan.tree.Fqn;
-
 import java.util.List;
 import java.util.Random;
 

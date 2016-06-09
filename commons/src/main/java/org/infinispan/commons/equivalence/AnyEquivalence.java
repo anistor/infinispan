@@ -9,23 +9,23 @@ package org.infinispan.commons.equivalence;
  */
 public final class AnyEquivalence<T> implements Equivalence<T> {
 
-   private static AnyEquivalence<Object> OBJECT = new AnyEquivalence<Object>();
+   private static final AnyEquivalence<Object> INSTANCE = new AnyEquivalence<>();
 
-   public static AnyEquivalence<String> STRING = getInstance(String.class);
+   public static final AnyEquivalence<String> STRING = getInstance();
 
-   public static AnyEquivalence<Byte> BYTE = getInstance(Byte.class);
+   public static final AnyEquivalence<Byte> BYTE = getInstance();
 
-   public static AnyEquivalence<Short> SHORT = getInstance(Short.class);
+   public static final AnyEquivalence<Short> SHORT = getInstance();
 
-   public static AnyEquivalence<Integer> INT = getInstance(Integer.class);
+   public static final AnyEquivalence<Integer> INT = getInstance();
 
-   public static AnyEquivalence<Long> LONG = getInstance(Long.class);
+   public static final AnyEquivalence<Long> LONG = getInstance();
 
-   public static AnyEquivalence<Double> DOUBLE  = getInstance(Double.class);
+   public static final AnyEquivalence<Double> DOUBLE  = getInstance();
 
-   public static AnyEquivalence<Float> FLOAT = getInstance(Float.class);
+   public static final AnyEquivalence<Float> FLOAT = getInstance();
 
-   public static AnyEquivalence<Boolean> BOOLEAN = getInstance(Boolean.class);
+   public static final AnyEquivalence<Boolean> BOOLEAN = getInstance();
 
    // To avoid instantiation
    private AnyEquivalence() {
@@ -59,11 +59,12 @@ public final class AnyEquivalence<T> implements Equivalence<T> {
 
    @SuppressWarnings("unchecked")
    public static <T> AnyEquivalence<T> getInstance() {
-      return (AnyEquivalence<T>) OBJECT;
+      return (AnyEquivalence<T>) INSTANCE;
    }
 
+   //todo [anistor] unused
    @SuppressWarnings("unchecked")
    public static <T> AnyEquivalence<T> getInstance(Class<T> classType) {
-      return (AnyEquivalence<T>) OBJECT;
+      return (AnyEquivalence<T>) INSTANCE;
    }
 }
