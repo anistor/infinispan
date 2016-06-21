@@ -57,6 +57,7 @@ public final class FieldMapping {
       return name;
    }
 
+<<<<<<< HEAD
    public boolean index() {
       return index;
    }
@@ -82,6 +83,33 @@ public final class FieldMapping {
    }
 
    public LuceneOptions luceneOptions() {
+=======
+   public boolean isIndex() {
+      return index;
+   }
+
+   public float getBoost() {
+      return boost;
+   }
+
+   public boolean isAnalyze() {
+      return analyze;
+   }
+
+   public boolean isStore() {
+      return store;
+   }
+
+   public String getAnalyzer() {
+      return analyzer;
+   }
+
+   public String getIndexNullAs() {
+      return indexNullAs;
+   }
+
+   public LuceneOptions getLuceneOptions() {
+>>>>>>> ISPN-7183 Upgrade to protostream-4.0.0.Alpha1
       return luceneOptions;
    }
 
