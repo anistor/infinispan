@@ -232,6 +232,12 @@ public abstract class AbstractMatcherTest {
    }
 
    @Test
+   public void testMap() throws Exception {
+      String queryString = "from org.infinispan.objectfilter.test.model.Person where mapOfNumbers is null";
+      assertTrue(match(queryString, createPerson2()));
+   }
+
+   @Test
    public void testCollectionIsNull1() throws Exception {
       String queryString = "from org.infinispan.objectfilter.test.model.Person where phoneNumbers is null";
       assertTrue(match(queryString, createPerson2()));
