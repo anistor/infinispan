@@ -3,6 +3,8 @@ package org.infinispan.query.dsl;
 /**
  * The context of a complete filter. Provides operations to allow connecting multiple filters together with boolean
  * operators.
+ * <p>
+ * Boolean operator precedence: not > and > xor > or.
  *
  * @author anistor@redhat.com
  * @since 6.0
@@ -50,6 +52,27 @@ public interface FilterConditionContext {
     * @return the new context
     */
    FilterConditionContextQueryBuilder or(FilterConditionContext rightCondition);
+
+   /**
+    * Creates a new context and connects it with the current one using boolean XOR. The new context is added after the
+    * current one.
+    * <p/>
+    * The effect is: a XOR b
+    *
+    * @return the new context
+    */
+   FilterConditionContextQueryBuilder xor();
+
+   /**
+    * Connects a given context with the current one using boolean XOR. The new context is added after the current one
+    * and is grouped.
+    * <p/>
+    * The effect is: a XOR (b)
+    *
+    * @param rightCondition the second condition
+    * @return the new context
+    */
+   FilterConditionContextQueryBuilder xor(FilterConditionContext rightCondition);
 
    /**
     * Get the {@link QueryBuilder} that created this context. As of Infinispan 9.0 this is no longer needed.

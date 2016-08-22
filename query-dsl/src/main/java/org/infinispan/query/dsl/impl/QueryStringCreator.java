@@ -121,6 +121,13 @@ public class QueryStringCreator implements Visitor<String> {
    }
 
    @Override
+   public String visit(XorCondition booleanCondition) {
+      String first = booleanCondition.getFirstCondition().accept(this);
+      String second = booleanCondition.getSecondCondition().accept(this);
+      return "(" + first + ") AND NOT (" + second + ") OR NOT (" + first + ") AND (" + second + ")";
+   }
+
+   @Override
    public String visit(NotCondition notCondition) {
       return "NOT (" + notCondition.getFirstCondition().accept(this) + ')';
    }

@@ -1,5 +1,7 @@
 package org.infinispan.query.dsl.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import org.infinispan.query.dsl.FilterConditionContext;
 import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryFactory;
@@ -105,5 +107,93 @@ public class CreationTest {
       qf1.from("MyDummyType")
             .having("attr1").eq("1")
             .or(fcc);    // exception expected
+   }
+
+   @Test
+   public void testEQ() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .having("f1").eq("X")
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE _gen0.f1 = 'X'", q.getQueryString());
+   }
+
+   @Test
+   public void testNot() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .not().having("f1").eq("X")
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE _gen0.f1 != 'X'", q.getQueryString());
+   }
+
+   @Test
+   public void testAnd1() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .having("f1").eq("X").and().having("f2").eq("Y")
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE (_gen0.f1 = 'X') AND (_gen0.f2 = 'Y')", q.getQueryString());
+   }
+
+   @Test
+   public void testAnd2() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .having("f1").eq("X").and(qf.having("f2").eq("Y"))
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE (_gen0.f1 = 'X') AND (_gen0.f2 = 'Y')", q.getQueryString());
+   }
+
+   @Test
+   public void testOr1() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .having("f1").eq("X").or().having("f2").eq("Y")
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE (_gen0.f1 = 'X') OR (_gen0.f2 = 'Y')", q.getQueryString());
+   }
+
+   @Test
+   public void testOr2() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .having("f1").eq("X").or(qf.having("f2").eq("Y"))
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE (_gen0.f1 = 'X') OR (_gen0.f2 = 'Y')", q.getQueryString());
+   }
+
+   @Test
+   public void testXor1() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .having("f1").eq("X").xor().having("f2").eq("Y")
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE (_gen0.f1 = 'X') AND NOT (_gen0.f2 = 'Y') OR NOT (_gen0.f1 = 'X') AND (_gen0.f2 = 'Y')", q.getQueryString());
+   }
+
+   @Test
+   public void testXor2() {
+      DummyQueryFactory qf = new DummyQueryFactory();
+
+      DummyQuery q = (DummyQuery) qf.from("TestEntity")
+            .having("f1").eq("X").xor(qf.having("f2").eq("Y"))
+            .toBuilder().build();
+
+      assertEquals("FROM TestEntity _gen0 WHERE (_gen0.f1 = 'X') AND NOT (_gen0.f2 = 'Y') OR NOT (_gen0.f1 = 'X') AND (_gen0.f2 = 'Y')", q.getQueryString());
    }
 }

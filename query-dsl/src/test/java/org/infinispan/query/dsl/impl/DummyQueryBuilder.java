@@ -12,6 +12,7 @@ class DummyQueryBuilder extends BaseQueryBuilder {
 
    @Override
    public DummyQuery build() {
-      return new DummyQuery();
+      String queryString = accept(new QueryStringCreator());
+      return new DummyQuery(queryString);
    }
 }

@@ -13,6 +13,10 @@ import org.jboss.logging.Logger;
  */
 abstract class BooleanCondition extends BaseCondition {
 
+   protected enum Type {
+      AND, OR, XOR
+   }
+
    private static final Log log = Logger.getMessageLogger(Log.class, BooleanCondition.class.getName());
 
    private BaseCondition leftCondition;

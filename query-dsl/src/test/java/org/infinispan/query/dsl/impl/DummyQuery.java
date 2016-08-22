@@ -12,6 +12,12 @@ import org.infinispan.query.dsl.Query;
  */
 class DummyQuery implements Query {
 
+   private final String queryString;
+
+   DummyQuery(String queryString) {
+      this.queryString = queryString;
+   }
+
    @Override
    public Map<String, Object> getParameters() {
       return null;
@@ -50,5 +56,9 @@ class DummyQuery implements Query {
    @Override
    public Query maxResults(int maxResults) {
       return this;
+   }
+
+   public String getQueryString() {
+      return queryString;
    }
 }

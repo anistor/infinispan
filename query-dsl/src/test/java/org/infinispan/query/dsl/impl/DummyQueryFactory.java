@@ -11,7 +11,7 @@ class DummyQueryFactory extends BaseQueryFactory {
 
    @Override
    public Query create(String queryString) {
-      return new DummyQuery();
+      return new DummyQuery(queryString);
    }
 
    @Override

@@ -73,30 +73,43 @@ abstract class BaseCondition implements FilterConditionContextQueryBuilder, Visi
    @Override
    public FilterConditionBeginContext and() {
       IncompleteCondition rightCondition = new IncompleteCondition(queryFactory);
-      combine(true, rightCondition);
+      combine(BooleanCondition.Type.AND, rightCondition);
       return rightCondition;
    }
 
    @Override
    public FilterConditionContextQueryBuilder and(FilterConditionContext rightCondition) {
-      combine(true, rightCondition);
+      combine(BooleanCondition.Type.AND, rightCondition);
       return this;
    }
 
    @Override
    public FilterConditionBeginContext or() {
       IncompleteCondition rightCondition = new IncompleteCondition(queryFactory);
-      combine(false, rightCondition);
+      combine(BooleanCondition.Type.OR, rightCondition);
       return rightCondition;
    }
 
    @Override
-   public BaseCondition or(FilterConditionContext rightCondition) {
-      combine(false, rightCondition);
+   public FilterConditionContextQueryBuilder or(FilterConditionContext rightCondition) {
+      combine(BooleanCondition.Type.OR, rightCondition);
       return this;
    }
 
-   private void combine(boolean isConjunction, FilterConditionContext fcc) {
+   @Override
+   public FilterConditionContextQueryBuilder xor() {
+      IncompleteCondition rightCondition = new IncompleteCondition(queryFactory);
+      combine(BooleanCondition.Type.XOR, rightCondition);
+      return rightCondition;
+   }
+
+   @Override
+   public FilterConditionContextQueryBuilder xor(FilterConditionContext rightCondition) {
+      combine(BooleanCondition.Type.XOR, rightCondition);
+      return this;
+   }
+
+   private void combine(BooleanCondition.Type booleanConditionType, FilterConditionContext fcc) {
       if (fcc == null) {
          throw log.argumentCannotBeNull();
       }
@@ -110,17 +123,29 @@ abstract class BaseCondition implements FilterConditionContextQueryBuilder, Visi
          throw log.conditionIsAlreadyInUseByAnotherBuilder();
       }
 
-      if (isConjunction && parent instanceof OrCondition) {
-         BooleanCondition p = new AndCondition(queryFactory, this, rightCondition);
+      BooleanCondition p;
+      if (booleanConditionType == BooleanCondition.Type.AND && parent instanceof OrCondition) {
+         p = new AndCondition(queryFactory, this, rightCondition);
          ((BooleanCondition) parent).replaceChildCondition(this, p);
          parent = p;
-         rightCondition.setParent(p);
       } else {
          BaseCondition root = getRoot();
-         BooleanCondition p = isConjunction ? new AndCondition(queryFactory, root, rightCondition) : new OrCondition(queryFactory, root, rightCondition);
+         switch (booleanConditionType) {
+            case AND:
+               p = new AndCondition(queryFactory, root, rightCondition);
+               break;
+            case OR:
+               p = new OrCondition(queryFactory, root, rightCondition);
+               break;
+            case XOR:
+               p = new XorCondition(queryFactory, root, rightCondition);
+               break;
+            default:
+               throw new IllegalStateException("Unexpected boolean condition type : " + booleanConditionType);
+         }
          root.setParent(p);
-         rightCondition.setParent(p);
       }
+      rightCondition.setParent(p);
 
       rightCondition.setQueryBuilder(queryBuilder);
    }

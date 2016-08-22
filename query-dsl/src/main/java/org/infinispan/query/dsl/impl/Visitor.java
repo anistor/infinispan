@@ -36,6 +36,8 @@ interface Visitor<ReturnType> {
 
    ReturnType visit(OrCondition booleanCondition);
 
+   ReturnType visit(XorCondition booleanCondition);
+
    ReturnType visit(NotCondition notCondition);
 
    ReturnType visit(BaseQueryBuilder baseQueryBuilder);
