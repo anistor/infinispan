@@ -25,10 +25,12 @@ package org.jboss.as.clustering.infinispan.subsystem;
 import javax.transaction.xa.XAResource;
 
 import org.infinispan.Cache;
+import org.infinispan.factories.GlobalComponentRegistry;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.persistence.factory.CacheStoreFactory;
 import org.infinispan.persistence.factory.CacheStoreFactoryRegistry;
 import org.infinispan.server.infinispan.SecurityActions;
+import org.infinispan.server.infinispan.query.ClassRegistry;
 import org.infinispan.server.infinispan.task.ServerTaskRegistry;
 import org.jboss.logging.Logger;
 import org.jboss.msc.service.Service;
@@ -57,6 +59,7 @@ public class CacheService<K, V> implements Service<Cache<K, V>> {
         XAResourceRecoveryRegistry getRecoveryRegistry();
         CacheStoreFactory getDeployedCacheStoreFactory();
         ServerTaskRegistry getDeployedTaskRegistry();
+        ClassRegistry getClassRegistry();
     }
 
     public CacheService(String name, String configurationName, Dependencies dependencies) {
@@ -77,11 +80,14 @@ public class CacheService<K, V> implements Service<Cache<K, V>> {
     @Override
     public void start(StartContext context) {
         EmbeddedCacheManager container = this.dependencies.getCacheContainer();
+        GlobalComponentRegistry globalComponentRegistry = container.getGlobalComponentRegistry();
 
-        CacheStoreFactoryRegistry cacheStoreFactoryRegistry = container.getGlobalComponentRegistry().getComponent(CacheStoreFactoryRegistry.class);
+        CacheStoreFactoryRegistry cacheStoreFactoryRegistry = globalComponentRegistry.getComponent(CacheStoreFactoryRegistry.class);
         cacheStoreFactoryRegistry.addCacheStoreFactory(this.dependencies.getDeployedCacheStoreFactory());
 
-        container.getGlobalComponentRegistry().registerComponent(this.dependencies.getDeployedTaskRegistry(), ServerTaskRegistry.class);
+        globalComponentRegistry.registerComponent(this.dependencies.getDeployedTaskRegistry(), ServerTaskRegistry.class);
+
+        globalComponentRegistry.registerComponent(this.dependencies.getClassRegistry(), ClassRegistry.class);
 
         this.cache = SecurityActions.startCache(container, this.name, this.configurationName);
 

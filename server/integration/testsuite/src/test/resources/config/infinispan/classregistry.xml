@@ -1,0 +1,14 @@
+<subsystem xmlns="urn:infinispan:server:core:9.0" >
+    <cache-container name="local" default-cache="testcache">
+        <local-cache name="testcache" start="EAGER">
+            <transaction mode="NONE"/>
+            <compatibility enabled="true"/>
+            <indexing index="ALL">
+                <indexed-entities>
+                    <indexed-entity>org.infinispan.server.test.query.ClassRegistryIT$TestEntity</indexed-entity>
+                </indexed-entities>
+            </indexing>
+        </local-cache>
+        <local-cache name="memcachedCache"/>
+    </cache-container>
+</subsystem>

@@ -31,6 +31,8 @@ import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.persistence.factory.CacheStoreFactory;
+import org.infinispan.server.infinispan.query.ClassRegistry;
+import org.infinispan.server.infinispan.query.ClassRegistryService;
 import org.infinispan.server.infinispan.spi.service.CacheContainerServiceName;
 import org.infinispan.server.infinispan.spi.service.CacheServiceName;
 import org.infinispan.server.infinispan.task.ServerTaskRegistry;
@@ -170,6 +172,7 @@ public abstract class CacheAdd extends AbstractAddStepHandler implements Restart
 
         builder.addDependency(DeployedCacheStoreFactoryService.SERVICE_NAME, DeployedCacheStoreFactory.class, cacheDependencies.getDeployedCacheStoreFactoryInjector());
         builder.addDependency(ServerTaskRegistryService.SERVICE_NAME, ServerTaskRegistry.class, cacheDependencies.getDeployedTaskRegistryInjector());
+        builder.addDependency(ClassRegistryService.SERVICE_NAME, ClassRegistry.class, cacheDependencies.getClassRegistryInjector());
 
         return builder.install();
     }
@@ -248,6 +251,7 @@ public abstract class CacheAdd extends AbstractAddStepHandler implements Restart
         private final InjectedValue<XAResourceRecoveryRegistry> recoveryRegistry = new InjectedValue<>();
         private final InjectedValue<DeployedCacheStoreFactory> deployedCacheStoreFactory = new InjectedValue<>();
         private final InjectedValue<ServerTaskRegistry> deployedTaskRegistry = new InjectedValue<>();
+        private final InjectedValue<ClassRegistry> classRegistry = new InjectedValue<>();
 
         CacheDependencies(Value<EmbeddedCacheManager> container) {
             this.container = container;
@@ -265,8 +269,18 @@ public abstract class CacheAdd extends AbstractAddStepHandler implements Restart
             return deployedTaskRegistry;
         }
 
+        @Override
         public ServerTaskRegistry getDeployedTaskRegistry() {
             return deployedTaskRegistry.getValue();
+        }
+
+        public InjectedValue<ClassRegistry> getClassRegistryInjector() {
+            return classRegistry;
+        }
+
+        @Override
+        public ClassRegistry getClassRegistry() {
+            return classRegistry.getValue();
         }
 
         @Override

@@ -80,6 +80,8 @@ import org.infinispan.persistence.rocksdb.configuration.CompressionType;
 import org.infinispan.persistence.rocksdb.configuration.RocksDBStoreConfigurationBuilder;
 import org.infinispan.persistence.spi.CacheLoader;
 import org.infinispan.server.commons.dmr.ModelNodes;
+import org.infinispan.server.infinispan.query.ClassRegistry;
+import org.infinispan.server.infinispan.query.ClassRegistryService;
 import org.infinispan.server.infinispan.spi.service.CacheContainerServiceName;
 import org.infinispan.server.infinispan.spi.service.CacheServiceName;
 import org.infinispan.transaction.LockingMode;
@@ -377,6 +379,16 @@ public abstract class CacheConfigurationAdd extends AbstractAddStepHandler imple
             if (indexing.isEnabled()) {
                 final ModelNode indexedEntitiesModel = IndexingConfigurationResource.INDEXED_ENTITIES.resolveModelAttribute(context, indexingModel);
                 if (indexedEntitiesModel.isDefined()) {
+//                  ServiceController<?> serviceController = context.getServiceRegistry(false).getRequiredService(ClassRegistryService.SERVICE_NAME);
+//                  ClassRegistry classRegistry = (ClassRegistry) serviceController.getValue();
+//                  for (ModelNode indexedEntityNode : indexedEntitiesModel.asList()) {
+//                     String className = indexedEntityNode.asString();
+//                     Class<?> entityClass = classRegistry.getClasses().get(className);
+//                     if (entityClass == null) {
+//                        throw InfinispanMessages.MESSAGES.unableToInstantiateClass(className);
+//                     }
+//                     builder.indexing().addIndexedEntity(entityClass);
+//                  }
                     for (ModelNode indexedEntityNode : indexedEntitiesModel.asList()) {
                         String className = indexedEntityNode.asString();
                         String[] split = className.split(":");
