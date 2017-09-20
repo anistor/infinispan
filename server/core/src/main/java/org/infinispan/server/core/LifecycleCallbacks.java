@@ -9,6 +9,7 @@ import org.infinispan.server.core.dataconversion.JBossMarshallingTranscoder;
 import org.infinispan.server.core.dataconversion.JavaSerializationTranscoder;
 import org.infinispan.server.core.dataconversion.JsonTranscoder;
 import org.infinispan.server.core.dataconversion.XMLTranscoder;
+import org.kohsuke.MetaInfServices;
 
 /**
  * Module lifecycle callbacks implementation that enables module specific
@@ -17,6 +18,7 @@ import org.infinispan.server.core.dataconversion.XMLTranscoder;
  * @author Galder Zamarreño
  * @since 5.0
  */
+@MetaInfServices
 public class LifecycleCallbacks implements ModuleLifecycle {
 
    static ComponentMetadataRepo componentMetadataRepo;
@@ -29,6 +31,5 @@ public class LifecycleCallbacks implements ModuleLifecycle {
       encoderRegistry.registerTranscoder(new JBossMarshallingTranscoder(encoderRegistry));
       encoderRegistry.registerTranscoder(new XMLTranscoder());
       encoderRegistry.registerTranscoder(new JavaSerializationTranscoder());
-
    }
 }
