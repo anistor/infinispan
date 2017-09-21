@@ -23,6 +23,7 @@ import org.kohsuke.MetaInfServices;
  * @author Galder Zamarreño
  * @since 9.0
  */
+@SuppressWarnings("unused")
 @MetaInfServices
 @Namespace(root = "rest-store")
 @Namespace(uri = "urn:infinispan:config:store:rest:*", root = "rest-store")

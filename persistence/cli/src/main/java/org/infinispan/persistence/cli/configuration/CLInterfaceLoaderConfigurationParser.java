@@ -20,6 +20,7 @@ import org.kohsuke.MetaInfServices;
  * @author Galder Zamarreño
  * @since 9.0
  */
+@SuppressWarnings("unused")
 @MetaInfServices
 @Namespace(root = "cli-loader")
 @Namespace(uri = "urn:infinispan:config:store:cli:*", root = "cli-loader")

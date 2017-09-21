@@ -22,6 +22,7 @@ import org.kohsuke.MetaInfServices;
 @Namespace(uri = "urn:infinispan:config:mymodule", root = "sample-element")
 @Namespace(root = "sample-element")
 @MetaInfServices
+@SuppressWarnings("unused")
 public class MyParserExtension implements ConfigurationParser {
 
    @Override
