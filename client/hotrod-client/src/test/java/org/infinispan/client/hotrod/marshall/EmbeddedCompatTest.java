@@ -165,6 +165,23 @@ public class EmbeddedCompatTest extends SingleCacheManagerTest {
       assertAccount(fromEmbeddedCache, AccountHS.class);
    }
 
+   public void testPutAndGetForEmbeddedEntry_____null_date() throws Exception {
+      AccountHS account = new AccountHS();
+      account.setId(1);
+      account.setDescription("test description");
+      account.setCreationDate(null);
+      cache.put(1, account);
+
+      // try to get the object through the remote cache interface and check it's the same object we put
+      assertEquals(1, remoteCache.keySet().size());
+      Map.Entry<Integer, Account> entry = remoteCache.entrySet().iterator().next();
+      assertAccount(entry.getValue(), AccountPB.class);
+
+      // get the object through the embedded cache interface and check it's the same object we put
+      Account fromEmbeddedCache = (Account) embeddedCache.get(1);
+      assertAccount(fromEmbeddedCache, AccountHS.class);
+   }
+
    public void testRemoteQuery() throws Exception {
       Account account = createAccountPB(1);
       remoteCache.put(1, account);
