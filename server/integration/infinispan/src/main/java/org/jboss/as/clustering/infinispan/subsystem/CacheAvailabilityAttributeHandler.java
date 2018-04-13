@@ -44,34 +44,32 @@ import org.jboss.msc.service.ServiceController;
  */
 public class CacheAvailabilityAttributeHandler extends AbstractRuntimeOnlyHandler {
 
-    public static final CacheAvailabilityAttributeHandler INSTANCE = new CacheAvailabilityAttributeHandler();
+   public static final CacheAvailabilityAttributeHandler INSTANCE = new CacheAvailabilityAttributeHandler();
 
-    @Override
-    public void executeRuntimeStep(OperationContext context, ModelNode operation) throws OperationFailedException {
-        final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
-        final String cacheContainerName = address.getElement(address.size() - 2).getValue();
-        final String cacheName = address.getElement(address.size() - 1).getValue();
-        final ServiceController<?> controller = context.getServiceRegistry(false).getService(
-                CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
-        if (controller != null) {
-            Cache<?, ?> cache = (Cache<?, ?>) controller.getValue();
-            if (cache != null) {
-                ComponentRegistry registry = SecurityActions.getComponentRegistry(cache.getAdvancedCache());
-                LocalTopologyManagerImpl localTopologyManager = (LocalTopologyManagerImpl) registry
-                      .getGlobalComponentRegistry().getComponent(LocalTopologyManager.class);
-                if (localTopologyManager != null) {
-                    try {
-                        if (operation.hasDefined(VALUE)) {
-                            ModelNode newValue = operation.get(VALUE);
-                            localTopologyManager.setCacheAvailability(cacheName, AvailabilityMode.valueOf(newValue.asString()));
-                        } else {
-                            context.getResult().set(new ModelNode().set(localTopologyManager.getCacheAvailability(cacheName).toString()));
-                        }
-                    } catch (Exception e) {
-                        throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
-                    }
-                }
+   @Override
+   public void executeRuntimeStep(OperationContext context, ModelNode operation) throws OperationFailedException {
+      final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
+      final String cacheContainerName = address.getElement(address.size() - 2).getValue();
+      final String cacheName = address.getElement(address.size() - 1).getValue();
+      final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(
+            CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
+      Cache<?, ?> cache = (Cache<?, ?>) controller.getValue();
+      if (cache != null) {
+         ComponentRegistry registry = SecurityActions.getComponentRegistry(cache.getAdvancedCache());
+         LocalTopologyManagerImpl localTopologyManager = (LocalTopologyManagerImpl) registry
+               .getGlobalComponentRegistry().getComponent(LocalTopologyManager.class);
+         if (localTopologyManager != null) {
+            try {
+               if (operation.hasDefined(VALUE)) {
+                  ModelNode newValue = operation.get(VALUE);
+                  localTopologyManager.setCacheAvailability(cacheName, AvailabilityMode.valueOf(newValue.asString()));
+               } else {
+                  context.getResult().set(new ModelNode().set(localTopologyManager.getCacheAvailability(cacheName).toString()));
+               }
+            } catch (Exception e) {
+               throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
             }
-        }
-    }
+         }
+      }
+   }
 }

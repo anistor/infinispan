@@ -33,7 +33,6 @@ import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
 import org.jboss.dmr.ModelNode;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceName;
-import org.jboss.msc.service.ServiceRegistry;
 
 /**
  * RuntimeWriteAttributeHandler.
@@ -43,52 +42,49 @@ import org.jboss.msc.service.ServiceRegistry;
  */
 public class RuntimeCacheConfigurationWriteAttributeHandler extends AbstractWriteAttributeHandler<Void> {
 
-    private final RuntimeCacheConfigurationApplier applier;
-    private final SimpleAttributeDefinition attributeDef;
+   private final RuntimeCacheConfigurationApplier applier;
+   private final SimpleAttributeDefinition attributeDef;
 
-    public RuntimeCacheConfigurationWriteAttributeHandler(SimpleAttributeDefinition attributeDef, RuntimeCacheConfigurationApplier applier) {
-        super(attributeDef);
-        this.attributeDef = attributeDef;
-        this.applier = applier;
-    }
+   public RuntimeCacheConfigurationWriteAttributeHandler(SimpleAttributeDefinition attributeDef, RuntimeCacheConfigurationApplier applier) {
+      super(attributeDef);
+      this.attributeDef = attributeDef;
+      this.applier = applier;
+   }
 
-    @Override
-    protected boolean applyUpdateToRuntime(OperationContext context, ModelNode operation, String attributeName,
-            ModelNode newValue, ModelNode currentValue, HandbackHolder<Void> handbackHolder)
-                    throws OperationFailedException {
+   @Override
+   protected boolean applyUpdateToRuntime(OperationContext context, ModelNode operation, String attributeName,
+                                          ModelNode newValue, ModelNode currentValue, HandbackHolder<Void> handbackHolder)
+         throws OperationFailedException {
 
-        final ModelNode model = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
-        applyModelToRuntime(context, operation, attributeName, model);
+      final ModelNode model = context.readResource(PathAddress.EMPTY_ADDRESS).getModel();
+      applyModelToRuntime(context, operation, attributeName, model);
 
-        return false;
-    }
+      return false;
+   }
 
-    private void applyModelToRuntime(OperationContext context, ModelNode operation, String attributeName,
-            ModelNode model) throws OperationFailedException {
-        final PathAddress address = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.OP_ADDR));
-        final ServiceName serviceName = getParentServiceName(address);
-        final ServiceRegistry registry = context.getServiceRegistry(true);
-        ServiceController<?> sc = registry.getService(serviceName);
-        if (sc != null) {
-            CacheConfigurationService ccs = (CacheConfigurationService) sc.getService();
-            Configuration configuration = ccs.getValue();
-            ModelNode value = attributeDef.resolveModelAttribute(context, model);
-            applier.applyConfiguration(configuration, value);
-        }
-    }
+   private void applyModelToRuntime(OperationContext context, ModelNode operation, String attributeName,
+                                    ModelNode model) throws OperationFailedException {
+      final PathAddress address = PathAddress.pathAddress(operation.get(ModelDescriptionConstants.OP_ADDR));
+      final ServiceName serviceName = getParentServiceName(address);
+      ServiceController<?> sc = context.getServiceRegistry(true).getRequiredService(serviceName);
+      CacheConfigurationService ccs = (CacheConfigurationService) sc.getService();
+      Configuration configuration = ccs.getValue();
+      ModelNode value = attributeDef.resolveModelAttribute(context, model);
+      applier.applyConfiguration(configuration, value);
+   }
 
-    @Override
-    protected void revertUpdateToRuntime(OperationContext context, ModelNode operation, String attributeName,
-            ModelNode valueToRestore, ModelNode valueToRevert, Void handback) throws OperationFailedException {
-        final ModelNode restored = context.readResource(PathAddress.EMPTY_ADDRESS).getModel().clone();
-        restored.get(attributeName).set(valueToRestore);
-        applyModelToRuntime(context, operation, attributeName, restored);
-    }
+   @Override
+   protected void revertUpdateToRuntime(OperationContext context, ModelNode operation, String attributeName,
+                                        ModelNode valueToRestore, ModelNode valueToRevert, Void handback) throws OperationFailedException {
+      final ModelNode restored = context.readResource(PathAddress.EMPTY_ADDRESS).getModel().clone();
+      restored.get(attributeName).set(valueToRestore);
+      applyModelToRuntime(context, operation, attributeName, restored);
+   }
 
-    protected ServiceName getParentServiceName(PathAddress parentAddress) {
-        int containerIndex = PathAddressUtils.indexOf(parentAddress, CacheContainerResource.CONTAINER_PATH);
-        String containerName = parentAddress.getElement(containerIndex).getValue();
-        String configurationName = parentAddress.getElement(containerIndex + 2).getValue();
-        return CacheServiceName.CONFIGURATION.getServiceName(containerName, configurationName);
-    }
+   protected ServiceName getParentServiceName(PathAddress parentAddress) {
+      int containerIndex = PathAddressUtils.indexOf(parentAddress, CacheContainerResource.CONTAINER_PATH);
+      String containerName = parentAddress.getElement(containerIndex).getValue();
+      String configurationName = parentAddress.getElement(containerIndex + 2).getValue();
+      return CacheServiceName.CONFIGURATION.getServiceName(containerName, configurationName);
+   }
 }

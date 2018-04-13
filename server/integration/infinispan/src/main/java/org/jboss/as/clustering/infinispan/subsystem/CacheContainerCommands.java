@@ -80,7 +80,7 @@ public abstract class CacheContainerCommands implements OperationStepHandler {
       final PathAddress address = pathAddress(operation.require(OP_ADDR));
       final String cacheContainerName = address.getElement(address.size() - 1 - pathOffset).getValue();
       final ServiceController<?> controller = context.getServiceRegistry(false)
-            .getService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
+            .getRequiredService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
       return (EmbeddedCacheManager) controller.getValue();
    }
 

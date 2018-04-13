@@ -52,33 +52,31 @@ public class RegisterProtoSchemasOperationHandler implements OperationStepHandle
    public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
       final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
       final String cacheContainerName = address.getElement(address.size() - 1).getValue();
-      final ServiceController<?> controller = context.getServiceRegistry(false).getService(
-              CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
+      final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(
+            CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
 
-      if (controller != null) {
-         EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
-         ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
-         if (protoManager != null) {
-            try {
-               String namesParameter = CacheContainerResource.PROTO_NAMES.getName();
-               String contentsParameter = CacheContainerResource.PROTO_CONTENTS.getName();
-               ModelNode names = operation.require(namesParameter);
-               ModelNode contents = operation.require(contentsParameter);
-               validateParameters(names, contents);
-               List<ModelNode> descriptorsNames = names.asList();
-               List<ModelNode> descriptorsContents = contents.asList();
-               String[] nameArray = new String[descriptorsNames.size()];
-               String[] contentArray = new String[descriptorsNames.size()];
-               int i = 0;
-               for (ModelNode modelNode : descriptorsNames) {
-                  nameArray[i] = modelNode.asString();
-                  contentArray[i] = descriptorsContents.get(i).asString();
-                  i++;
-               }
-               protoManager.registerProtofiles(nameArray, contentArray);
-            } catch (Exception e) {
-               throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
+      EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
+      ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
+      if (protoManager != null) {
+         try {
+            String namesParameter = CacheContainerResource.PROTO_NAMES.getName();
+            String contentsParameter = CacheContainerResource.PROTO_CONTENTS.getName();
+            ModelNode names = operation.require(namesParameter);
+            ModelNode contents = operation.require(contentsParameter);
+            validateParameters(names, contents);
+            List<ModelNode> descriptorsNames = names.asList();
+            List<ModelNode> descriptorsContents = contents.asList();
+            String[] nameArray = new String[descriptorsNames.size()];
+            String[] contentArray = new String[descriptorsNames.size()];
+            int i = 0;
+            for (ModelNode modelNode : descriptorsNames) {
+               nameArray[i] = modelNode.asString();
+               contentArray[i] = descriptorsContents.get(i).asString();
+               i++;
             }
+            protoManager.registerProtofiles(nameArray, contentArray);
+         } catch (Exception e) {
+            throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
          }
       }
    }
@@ -97,5 +95,4 @@ public class RegisterProtoSchemasOperationHandler implements OperationStepHandle
          throw MESSAGES.invalidParameterSizes(nameParameter, contentParameter);
       }
    }
-
 }

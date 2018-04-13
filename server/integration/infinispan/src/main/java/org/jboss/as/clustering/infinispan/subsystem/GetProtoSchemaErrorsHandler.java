@@ -15,7 +15,7 @@ import org.jboss.dmr.ModelType;
 import org.jboss.msc.service.ServiceController;
 
 /**
- * Handler to get the errors messages attached to a protobuf schema file (by name).
+ * Handler to get the error messages attached to a protobuf schema file given its name.
  *
  * @author anistor@redhat.com
  * @since 9.0
@@ -28,25 +28,23 @@ public class GetProtoSchemaErrorsHandler extends AbstractRuntimeOnlyHandler {
    public void executeRuntimeStep(OperationContext context, ModelNode operation) throws OperationFailedException {
       final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
       final String cacheContainerName = address.getElement(address.size() - 1).getValue();
-      final ServiceController<?> controller = context.getServiceRegistry(false).getService(
+      final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(
             CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
-      if (controller != null) {
-         final EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
-         final ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
+      final EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
+      final ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
 
-         if (protoManager != null) {
-            try {
-               ModelNode name = operation.require(CacheContainerResource.PROTO_NAME.getName());
-               validateParameters(name);
-               String fileErrors = protoManager.getFileErrors(name.asString());
-               ModelNode result = new ModelNode();
-               if (fileErrors != null) {
-                  result.set(fileErrors);
-               }
-               context.getResult().set(result);
-            } catch (Exception e) {
-               throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
+      if (protoManager != null) {
+         try {
+            ModelNode name = operation.require(CacheContainerResource.PROTO_NAME.getName());
+            validateParameters(name);
+            String fileErrors = protoManager.getFileErrors(name.asString());
+            ModelNode result = new ModelNode();
+            if (fileErrors != null) {
+               result.set(fileErrors);
             }
+            context.getResult().set(result);
+         } catch (Exception e) {
+            throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
          }
       }
    }

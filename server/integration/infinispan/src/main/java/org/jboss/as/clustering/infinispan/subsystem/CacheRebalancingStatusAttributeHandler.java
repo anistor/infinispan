@@ -41,28 +41,26 @@ import org.jboss.msc.service.ServiceController;
  */
 public class CacheRebalancingStatusAttributeHandler extends AbstractRuntimeOnlyHandler {
 
-    public static final CacheRebalancingStatusAttributeHandler INSTANCE = new CacheRebalancingStatusAttributeHandler();
+   public static final CacheRebalancingStatusAttributeHandler INSTANCE = new CacheRebalancingStatusAttributeHandler();
 
-    @Override
-    public void executeRuntimeStep(OperationContext context, ModelNode operation) throws OperationFailedException {
-        final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
-        final String cacheContainerName = address.getElement(address.size() - 2).getValue();
-        final String cacheName = address.getElement(address.size() - 1).getValue();
-        final ServiceController<?> controller = context.getServiceRegistry(false).getService(
-                CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
-        if (controller != null) {
-            Cache<?, ?> cache = (Cache<?, ?>) controller.getValue();
-            if (cache != null) {
-                ComponentRegistry registry = SecurityActions.getComponentRegistry(cache.getAdvancedCache());
-                StateTransferManager stateTransferManager = registry.getStateTransferManager();
-                if (stateTransferManager != null) {
-                    try {
-                        context.getResult().set(new ModelNode().set(stateTransferManager.getRebalancingStatus()));
-                    } catch (Exception e) {
-                        throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
-                    }
-                }
+   @Override
+   public void executeRuntimeStep(OperationContext context, ModelNode operation) throws OperationFailedException {
+      final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
+      final String cacheContainerName = address.getElement(address.size() - 2).getValue();
+      final String cacheName = address.getElement(address.size() - 1).getValue();
+      final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(
+            CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
+      Cache<?, ?> cache = (Cache<?, ?>) controller.getValue();
+      if (cache != null) {
+         ComponentRegistry registry = SecurityActions.getComponentRegistry(cache.getAdvancedCache());
+         StateTransferManager stateTransferManager = registry.getStateTransferManager();
+         if (stateTransferManager != null) {
+            try {
+               context.getResult().set(new ModelNode().set(stateTransferManager.getRebalancingStatus()));
+            } catch (Exception e) {
+               throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
             }
-        }
-    }
+         }
+      }
+   }
 }

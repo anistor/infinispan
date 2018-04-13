@@ -30,29 +30,27 @@ public class GetProtobufSchemasWithErrorsHandler extends AbstractRuntimeOnlyHand
    public void executeRuntimeStep(OperationContext context, ModelNode operation) throws OperationFailedException {
       final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
       final String cacheContainerName = address.getElement(address.size() - 1).getValue();
-      final ServiceController<?> controller = context.getServiceRegistry(false).getService(
+      final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(
             CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
-      if (controller != null) {
-         final EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
-         final ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
+      final EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
+      final ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
 
-         if (protoManager != null) {
-            try {
-               String[] fileNames = protoManager.getFilesWithErrors();
-               ModelNode result = new ModelNode();
-               if (fileNames != null) {
-                  List<ModelNode> models = new ArrayList<>(fileNames.length);
-                  for (String name : fileNames) {
-                     models.add(new ModelNode().set(name));
-                  }
-                  result.set(models);
-               } else {
-                  result.setEmptyList();
+      if (protoManager != null) {
+         try {
+            String[] fileNames = protoManager.getFilesWithErrors();
+            ModelNode result = new ModelNode();
+            if (fileNames != null) {
+               List<ModelNode> models = new ArrayList<>(fileNames.length);
+               for (String name : fileNames) {
+                  models.add(new ModelNode().set(name));
                }
-               context.getResult().set(result);
-            } catch (Exception e) {
-               throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
+               result.set(models);
+            } else {
+               result.setEmptyList();
             }
+            context.getResult().set(result);
+         } catch (Exception e) {
+            throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
          }
       }
    }

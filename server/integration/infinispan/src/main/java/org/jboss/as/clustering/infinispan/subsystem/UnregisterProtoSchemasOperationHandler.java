@@ -15,7 +15,7 @@ import org.jboss.dmr.ModelType;
 import org.jboss.msc.service.ServiceController;
 
 /**
- * Handler to unregister a bunch of protobuf schemas given their names.
+ * Handler to unregister a set of protobuf schemas given their names.
  *
  * @author anistor@redhat.com
  * @since 8.2
@@ -28,21 +28,19 @@ public class UnregisterProtoSchemasOperationHandler implements OperationStepHand
    public void execute(OperationContext context, ModelNode operation) throws OperationFailedException {
       final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
       final String cacheContainerName = address.getElement(address.size() - 1).getValue();
-      final ServiceController<?> controller = context.getServiceRegistry(false).getService(
+      final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(
             CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
-      if (controller != null) {
-         final EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
-         final ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
-         if (protoManager != null) {
-            try {
-               ModelNode names = operation.require(CacheContainerResource.PROTO_NAMES.getName());
-               validateParameters(names);
-               for (ModelNode modelNode : names.asList()) {
-                  protoManager.unregisterProtofile(modelNode.asString());
-               }
-            } catch (Exception e) {
-               throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
+      final EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
+      final ProtobufMetadataManager protoManager = SecurityActions.getGlobalComponentRegistry(cacheManager).getComponent(ProtobufMetadataManager.class);
+      if (protoManager != null) {
+         try {
+            ModelNode names = operation.require(CacheContainerResource.PROTO_NAMES.getName());
+            validateParameters(names);
+            for (ModelNode modelNode : names.asList()) {
+               protoManager.unregisterProtofile(modelNode.asString());
             }
+         } catch (Exception e) {
+            throw new OperationFailedException(MESSAGES.failedToInvokeOperation(e.getLocalizedMessage()));
          }
       }
    }

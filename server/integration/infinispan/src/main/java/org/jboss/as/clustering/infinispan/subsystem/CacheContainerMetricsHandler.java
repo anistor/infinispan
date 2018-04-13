@@ -167,7 +167,7 @@ public class CacheContainerMetricsHandler extends AbstractRuntimeOnlyHandler {
         final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
         final String cacheContainerName = address.getLastElement().getValue();
         final String attrName = operation.require(ModelDescriptionConstants.NAME).asString();
-        final ServiceController<?> controller = context.getServiceRegistry(false).getService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
+        final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
         DefaultCacheContainer cacheManager = (DefaultCacheContainer) controller.getValue();
 
         CacheManagerMetrics metric = CacheManagerMetrics.getStat(attrName);

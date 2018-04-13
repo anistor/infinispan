@@ -194,7 +194,7 @@ public class CacheMetricsHandler extends AbstractRuntimeOnlyHandler {
         final String cacheContainerName = address.getElement(address.size() - 2).getValue();
         final String cacheName = address.getLastElement().getValue();
         final String attrName = operation.require(NAME).asString();
-        final ServiceController<?> controller = context.getServiceRegistry(false).getService(CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
+        final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
         Cache<?, ?> cache = (Cache<?, ?>) controller.getValue();
         CacheMetrics metric = CacheMetrics.getStat(attrName);
         ModelNode result = new ModelNode();

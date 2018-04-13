@@ -82,7 +82,7 @@ public abstract class CacheCommands implements OperationStepHandler {
         final String cacheContainerName = iterator.next().getValue();
         final String cacheName = iterator.next().getValue();
         if (context.isNormalServer()) {
-            final ServiceController<?> controller = context.getServiceRegistry(false).getService(CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
+            ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(CacheServiceName.CACHE.getServiceName(cacheContainerName, cacheName));
             Cache<?, ?> cache = (Cache<?, ?>) controller.getValue();
 
             ModelNode operationResult;

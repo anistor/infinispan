@@ -62,154 +62,151 @@ import org.jboss.msc.service.ServiceController;
  */
 public class HealthMetricsHandler extends AbstractRuntimeOnlyHandler {
 
-    public static final HealthMetricsHandler INSTANCE = new HealthMetricsHandler();
+   public static final HealthMetricsHandler INSTANCE = new HealthMetricsHandler();
 
-    private static final int CACHE_CONTAINER_INDEX = 1;
-    private static final int NUMBER_OF_LINES = 10;
+   private static final int CACHE_CONTAINER_INDEX = 1;
+   private static final int NUMBER_OF_LINES = 10;
 
-    private PathManager pathManager;
+   private PathManager pathManager;
 
-    private static Collection<ModelNode> toModelNodeCollection(Collection<String> collection) {
-        if (collection == null || collection.isEmpty()) {
-            return Collections.emptyList();
-        }
-        Collection<ModelNode> modelNodeCollection = new ArrayList<>(collection.size());
-        collection.forEach(e -> modelNodeCollection.add(new ModelNode().set(e)));
-        return modelNodeCollection;
-    }
+   private static Collection<ModelNode> toModelNodeCollection(Collection<String> collection) {
+      if (collection == null || collection.isEmpty()) {
+         return Collections.emptyList();
+      }
+      Collection<ModelNode> modelNodeCollection = new ArrayList<>(collection.size());
+      collection.forEach(e -> modelNodeCollection.add(new ModelNode().set(e)));
+      return modelNodeCollection;
+   }
 
-    @Override
-    protected void executeRuntimeStep(OperationContext context, ModelNode operation) {
-        /*
-         * This is a kind of operation we are parsing:
-         *    {
-         *       "operation" => "read-attribute",
-         *       "address" => [
-         *           ("subsystem" => "datagrid-infinispan"),
-         *           ("cache-container" => "clustered"),
-         *           ("health" => "HEALTH")
-         *       ],
-         *       "name" => "number-of-nodes",
-         *       "include-defaults" => true,
-         *       "resolve-expressions" => false,
-         *       "operation-headers" => {
-         *           "caller-type" => "user",
-         *           "access-mechanism" => "NATIVE"
-         *       }
-         *   }
-         */
-        final ModelNode result = new ModelNode();
-        final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
-        final String cacheContainerName = address.getElement(CACHE_CONTAINER_INDEX).getValue();
-        final String metricName = operation.require(ModelDescriptionConstants.NAME).asString();
-        final ServiceController<?> controller = context.getServiceRegistry(false).getService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
+   @Override
+   protected void executeRuntimeStep(OperationContext context, ModelNode operation) {
+      /*
+       * This is a kind of operation we are parsing:
+       *    {
+       *       "operation" => "read-attribute",
+       *       "address" => [
+       *           ("subsystem" => "datagrid-infinispan"),
+       *           ("cache-container" => "clustered"),
+       *           ("health" => "HEALTH")
+       *       ],
+       *       "name" => "number-of-nodes",
+       *       "include-defaults" => true,
+       *       "resolve-expressions" => false,
+       *       "operation-headers" => {
+       *           "caller-type" => "user",
+       *           "access-mechanism" => "NATIVE"
+       *       }
+       *   }
+       */
+      final ModelNode result = new ModelNode();
+      final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
+      final String cacheContainerName = address.getElement(CACHE_CONTAINER_INDEX).getValue();
+      final String metricName = operation.require(ModelDescriptionConstants.NAME).asString();
+      final ServiceController<?> controller = context.getServiceRegistry(false).getRequiredService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
 
-        if(controller != null) {
-            DefaultCacheContainer cacheManager = (DefaultCacheContainer) controller.getValue();
-            HealthMetrics metric = HealthMetrics.getMetric(metricName);
+      DefaultCacheContainer cacheManager = (DefaultCacheContainer) controller.getValue();
+      HealthMetrics metric = HealthMetrics.getMetric(metricName);
 
-            if (metric == null) {
-                context.getFailureDescription().set(String.format("Unknown metric %s", metricName));
-            } else if (cacheManager == null) {
-                context.getFailureDescription().set(String.format("Unavailable cache container %s", metricName));
-            } else {
-                Health health = cacheManager.getHealth();
-                switch (metric) {
-                    case CACHE_HEALTH:
-                        List<CacheHealth> cacheHealths = health.getCacheHealth();
-                        List<String> perCacheHealth = new LinkedList<>();
-                        for (CacheHealth cacheHealth : cacheHealths) {
-                            perCacheHealth.add(cacheHealth.getCacheName());
-                            perCacheHealth.add(cacheHealth.getStatus().toString());
-                        }
-                        result.set(toModelNodeCollection(perCacheHealth));
-                        break;
-                    case FREE_MEMORY_KB:
-                        result.set(health.getHostInfo().getFreeMemoryInKb());
-                        break;
-                    case TOTAL_MEMORY_KB:
-                        result.set(health.getHostInfo().getTotalMemoryKb());
-                        break;
-                    case NUMBER_OF_NODES:
-                        result.set(health.getClusterHealth().getNumberOfNodes());
-                        break;
-                    case CLUSTER_NAME:
-                        result.set(health.getClusterHealth().getClusterName());
-                        break;
-                    case NUMBER_OF_CPUS:
-                        result.set(health.getHostInfo().getNumberOfCpus());
-                        break;
-                    case CLUSTER_HEALTH:
-                        result.set(health.getClusterHealth().getHealthStatus().toString());
-                        break;
-                    case LOG_TAIL:
-                        File path = new File(pathManager.resolveRelativePathEntry("server.log", ServerEnvironment.SERVER_LOG_DIR));
-                        try (ReversedLinesFileReader reader = new ReversedLinesFileReader(path, StandardCharsets.UTF_8)) {
-                            List<String> results = new LinkedList<>();
-                            for (int i = 0; i < NUMBER_OF_LINES; ++i) {
-                                results.add(0, reader.readLine());
-                            }
-                            result.set(toModelNodeCollection(results));
-                        } catch (FileNotFoundException e) {
-                            result.set("File [" + path.getAbsolutePath() + "] does not exist");
-                        } catch (IOException e) {
-                            result.set("Unable to read file [" + path.getAbsolutePath() + "]");
-                        }
-                        break;
-                    default:
-                        context.getFailureDescription().set(String.format("Unknown metric %s", metric));
-                        break;
-                }
+      if (metric == null) {
+         context.getFailureDescription().set(String.format("Unknown metric %s", metricName));
+      } else if (cacheManager == null) {
+         context.getFailureDescription().set(String.format("Unavailable cache container %s", metricName));
+      } else {
+         Health health = cacheManager.getHealth();
+         switch (metric) {
+            case CACHE_HEALTH:
+               List<CacheHealth> cacheHealths = health.getCacheHealth();
+               List<String> perCacheHealth = new LinkedList<>();
+               for (CacheHealth cacheHealth : cacheHealths) {
+                  perCacheHealth.add(cacheHealth.getCacheName());
+                  perCacheHealth.add(cacheHealth.getStatus().toString());
+               }
+               result.set(toModelNodeCollection(perCacheHealth));
+               break;
+            case FREE_MEMORY_KB:
+               result.set(health.getHostInfo().getFreeMemoryInKb());
+               break;
+            case TOTAL_MEMORY_KB:
+               result.set(health.getHostInfo().getTotalMemoryKb());
+               break;
+            case NUMBER_OF_NODES:
+               result.set(health.getClusterHealth().getNumberOfNodes());
+               break;
+            case CLUSTER_NAME:
+               result.set(health.getClusterHealth().getClusterName());
+               break;
+            case NUMBER_OF_CPUS:
+               result.set(health.getHostInfo().getNumberOfCpus());
+               break;
+            case CLUSTER_HEALTH:
+               result.set(health.getClusterHealth().getHealthStatus().toString());
+               break;
+            case LOG_TAIL:
+               File path = new File(pathManager.resolveRelativePathEntry("server.log", ServerEnvironment.SERVER_LOG_DIR));
+               try (ReversedLinesFileReader reader = new ReversedLinesFileReader(path, StandardCharsets.UTF_8)) {
+                  List<String> results = new LinkedList<>();
+                  for (int i = 0; i < NUMBER_OF_LINES; ++i) {
+                     results.add(0, reader.readLine());
+                  }
+                  result.set(toModelNodeCollection(results));
+               } catch (FileNotFoundException e) {
+                  result.set("File [" + path.getAbsolutePath() + "] does not exist");
+               } catch (IOException e) {
+                  result.set("Unable to read file [" + path.getAbsolutePath() + "]");
+               }
+               break;
+            default:
+               context.getFailureDescription().set(String.format("Unknown metric %s", metric));
+               break;
+         }
+      }
+      context.getResult().set(result);
+   }
 
-            }
-        }
-        context.getResult().set(result);
-    }
+   public void registerPathManager(PathManager pathManager) {
+      this.pathManager = pathManager;
+   }
 
-    public void registerPathManager(PathManager pathManager) {
-        this.pathManager = pathManager;
-    }
+   public void registerMetrics(ManagementResourceRegistration container) {
+      for (HealthMetrics metric : HealthMetrics.values()) {
+         container.registerMetric(metric.definition, this);
+      }
+   }
 
-    public void registerMetrics(ManagementResourceRegistration container) {
-        for (HealthMetrics metric : HealthMetrics.values()) {
-            container.registerMetric(metric.definition, this);
-        }
-    }
+   public enum HealthMetrics {
+      NUMBER_OF_CPUS(MetricKeys.NUMBER_OF_CPUS, ModelType.INT),
+      TOTAL_MEMORY_KB(MetricKeys.TOTAL_MEMORY_KB, ModelType.LONG),
+      FREE_MEMORY_KB(MetricKeys.FREE_MEMORY_KB, ModelType.LONG),
+      CLUSTER_HEALTH(MetricKeys.CLUSTER_HEALTH, ModelType.STRING),
+      CLUSTER_NAME(MetricKeys.CLUSTER_NAME, ModelType.STRING),
+      NUMBER_OF_NODES(MetricKeys.NUMBER_OF_NODES, ModelType.INT),
+      CACHE_HEALTH(MetricKeys.CACHE_HEALTH, ModelType.LIST),
+      LOG_TAIL(MetricKeys.LOG_TAIL, ModelType.LIST);
 
-    public enum HealthMetrics {
-        NUMBER_OF_CPUS(MetricKeys.NUMBER_OF_CPUS, ModelType.INT),
-        TOTAL_MEMORY_KB(MetricKeys.TOTAL_MEMORY_KB, ModelType.LONG),
-        FREE_MEMORY_KB(MetricKeys.FREE_MEMORY_KB, ModelType.LONG),
-        CLUSTER_HEALTH(MetricKeys.CLUSTER_HEALTH, ModelType.STRING),
-        CLUSTER_NAME(MetricKeys.CLUSTER_NAME, ModelType.STRING),
-        NUMBER_OF_NODES(MetricKeys.NUMBER_OF_NODES, ModelType.INT),
-        CACHE_HEALTH(MetricKeys.CACHE_HEALTH, ModelType.LIST),
-        LOG_TAIL(MetricKeys.LOG_TAIL, ModelType.LIST);
+      private static final Map<String, HealthMetrics> MAP = new HashMap<>();
 
-        private static final Map<String, HealthMetrics> MAP = new HashMap<>();
+      static {
+         for (HealthMetrics metric : HealthMetrics.values()) {
+            MAP.put(metric.toString(), metric);
+         }
+      }
 
-        static {
-            for (HealthMetrics metric : HealthMetrics.values()) {
-                MAP.put(metric.toString(), metric);
-            }
-        }
+      final AttributeDefinition definition;
 
-        final AttributeDefinition definition;
+      HealthMetrics(String attributeName, ModelType type) {
+         this.definition = new StringListAttributeDefinition.Builder(attributeName)
+               .setRequired(false)
+               .setStorageRuntime()
+               .build();
+      }
 
-        HealthMetrics(String attributeName, ModelType type) {
-            this.definition = new StringListAttributeDefinition.Builder(attributeName)
-                    .setRequired(false)
-                    .setStorageRuntime()
-                    .build();
-        }
+      public static HealthMetrics getMetric(final String stringForm) {
+         return MAP.get(stringForm);
+      }
 
-        public static HealthMetrics getMetric(final String stringForm) {
-            return MAP.get(stringForm);
-        }
-
-        @Override
-        public final String toString() {
-            return definition.getName();
-        }
-    }
+      @Override
+      public final String toString() {
+         return definition.getName();
+      }
+   }
 }

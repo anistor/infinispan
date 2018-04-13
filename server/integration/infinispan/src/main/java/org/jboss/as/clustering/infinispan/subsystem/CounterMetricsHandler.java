@@ -26,58 +26,56 @@ import org.jboss.msc.service.ServiceController;
  */
 public class CounterMetricsHandler extends AbstractRuntimeOnlyHandler {
 
-    public static final CounterMetricsHandler INSTANCE = new CounterMetricsHandler();
+   public static final CounterMetricsHandler INSTANCE = new CounterMetricsHandler();
 
-    private static final int CACHE_CONTAINER_INDEX = 1;
-    private static final int COUNTER_INDEX = 3;
+   private static final int CACHE_CONTAINER_INDEX = 1;
+   private static final int COUNTER_INDEX = 3;
 
-    @Override
-    protected void executeRuntimeStep(OperationContext context, ModelNode operation) {
+   @Override
+   protected void executeRuntimeStep(OperationContext context, ModelNode operation) {
 
-        final ModelNode result = new ModelNode();
-        final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
-        final String cacheContainerName = address.getElement(CACHE_CONTAINER_INDEX).getValue();
-        final String counterType = address.getElement(COUNTER_INDEX).getKey();
-        final String counterName = address.getElement(COUNTER_INDEX).getValue();
-        final ServiceController<?> controller = context.getServiceRegistry(false)
-                .getService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
+      final ModelNode result = new ModelNode();
+      final PathAddress address = PathAddress.pathAddress(operation.require(OP_ADDR));
+      final String cacheContainerName = address.getElement(CACHE_CONTAINER_INDEX).getValue();
+      final String counterType = address.getElement(COUNTER_INDEX).getKey();
+      final String counterName = address.getElement(COUNTER_INDEX).getValue();
+      final ServiceController<?> controller = context.getServiceRegistry(false)
+            .getRequiredService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
 
-        Long value;
-        if (controller != null) {
-            DefaultCacheContainer cacheManager = (DefaultCacheContainer) controller.getValue();
-            CounterManager counterManager = EmbeddedCounterManagerFactory.asCounterManager(cacheManager);
-            if (ModelKeys.STRONG_COUNTER.equals(counterType)) {
-                StrongCounter sc = counterManager.getStrongCounter(counterName);
-                value = sc.sync().getValue();
-            } else {
-                WeakCounter wc = counterManager.getWeakCounter(counterName);
-                value = wc.sync().getValue();
-            }
-            result.set(value);
-        }
-        context.getResult().set(result);
-    }
+      Long value;
+      DefaultCacheContainer cacheManager = (DefaultCacheContainer) controller.getValue();
+      CounterManager counterManager = EmbeddedCounterManagerFactory.asCounterManager(cacheManager);
+      if (ModelKeys.STRONG_COUNTER.equals(counterType)) {
+         StrongCounter sc = counterManager.getStrongCounter(counterName);
+         value = sc.sync().getValue();
+      } else {
+         WeakCounter wc = counterManager.getWeakCounter(counterName);
+         value = wc.sync().getValue();
+      }
+      result.set(value);
+      context.getResult().set(result);
+   }
 
-    public void registerMetrics(ManagementResourceRegistration container) {
-        for (CounterMetrics metric : CounterMetrics.values()) {
-            container.registerMetric(metric.definition, this);
-        }
-    }
+   public void registerMetrics(ManagementResourceRegistration container) {
+      for (CounterMetrics metric : CounterMetrics.values()) {
+         container.registerMetric(metric.definition, this);
+      }
+   }
 
-    public enum CounterMetrics {
+   public enum CounterMetrics {
 
-        VALUE(MetricKeys.VALUE, ModelType.LONG);
+      VALUE(MetricKeys.VALUE, ModelType.LONG);
 
-        final AttributeDefinition definition;
+      final AttributeDefinition definition;
 
-        CounterMetrics(String attributeName, ModelType type) {
-            this.definition = new SimpleAttributeDefinitionBuilder(attributeName, type).setRequired(true)
-                    .setStorageRuntime().build();
-        }
+      CounterMetrics(String attributeName, ModelType type) {
+         this.definition = new SimpleAttributeDefinitionBuilder(attributeName, type).setRequired(true)
+               .setStorageRuntime().build();
+      }
 
-        @Override
-        public final String toString() {
-            return definition.getName();
-        }
-    }
+      @Override
+      public final String toString() {
+         return definition.getName();
+      }
+   }
 }

@@ -35,6 +35,7 @@ import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.dmr.ModelNode;
+import org.jboss.logging.Logger;
 import org.jboss.msc.service.ServiceController;
 
 /**
@@ -45,23 +46,25 @@ import org.jboss.msc.service.ServiceController;
  * @since 6.1
  */
 public class CliInterpreterHandler implements OperationStepHandler {
+
+   private static final Logger log = Logger.getLogger(CliInterpreterHandler.class.getPackage().getName());
+
    public static final CliInterpreterHandler INSTANCE = new CliInterpreterHandler();
 
    @Override
    public void execute(OperationContext context, ModelNode operation) {
       final ModelNode result = new ModelNode();
       try {
-         final String command = operation.require("command").asString();
-         final String cacheName = operation.has("cacheName") ? operation.get("cacheName").asString() : null;
-         String sessionId = operation.has("sessionId") ? operation.get("sessionId").asString() : null;
          final Interpreter interpreter = getInterpreter(context, operation);
-
          if (interpreter == null) {
             context.getFailureDescription().set("Interpreter not found!");
             context.getResult().set(result);
             return;
          }
 
+         final String command = operation.require("command").asString();
+         final String cacheName = operation.has("cacheName") ? operation.get("cacheName").asString() : null;
+         String sessionId = operation.has("sessionId") ? operation.get("sessionId").asString() : null;
          if (sessionId == null) {
             sessionId = interpreter.createSessionId(cacheName);
             setInModelNode(result, "sessionId", sessionId);
@@ -72,7 +75,7 @@ public class CliInterpreterHandler implements OperationStepHandler {
          setResponse(result, response);
          context.getResult().set(result);
       } catch (Exception e) {
-         e.printStackTrace();
+         log.error(e);
          context.getFailureDescription().set(e.getLocalizedMessage());
          context.getResult().set(result);
       }
@@ -95,7 +98,7 @@ public class CliInterpreterHandler implements OperationStepHandler {
       final PathAddress address = pathAddress(operation.require(OP_ADDR));
       final String cacheContainerName = address.getLastElement().getValue();
       final ServiceController<?> controller = context.getServiceRegistry(false)
-            .getService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
+            .getRequiredService(CacheContainerServiceName.CACHE_CONTAINER.getServiceName(cacheContainerName));
       EmbeddedCacheManager cacheManager = (EmbeddedCacheManager) controller.getValue();
 
       if (cacheManager == null) {
