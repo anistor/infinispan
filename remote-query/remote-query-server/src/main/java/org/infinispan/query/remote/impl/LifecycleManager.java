@@ -89,9 +89,9 @@ public final class LifecycleManager implements ModuleLifecycle {
       gcr.registerComponent(protobufMetadataManager, ProtobufMetadataManager.class);
       registerProtobufMetadataManagerMBean(protobufMetadataManager, gcr, cacheManager.getName());
       ClassLoader classLoader = cacheManager.getCacheManagerConfiguration().classLoader();
-      processContextInitializers(classLoader, protobufMetadataManager);
-
       SerializationContext serCtx = protobufMetadataManager.getSerializationContext();
+      processContextInitializers(classLoader, serCtx);
+
       EncoderRegistry encoderRegistry = gcr.getComponent(EncoderRegistry.class);
       encoderRegistry.registerTranscoder(new ProtostreamJsonTranscoder(serCtx));
       encoderRegistry.registerTranscoder(new ProtostreamTextTranscoder(serCtx));
@@ -99,13 +99,13 @@ public final class LifecycleManager implements ModuleLifecycle {
       encoderRegistry.registerTranscoder(new ProtostreamBinaryTranscoder());
    }
 
-   private void processContextInitializers(ClassLoader classLoader, ProtobufMetadataManagerImpl metadataManager) {
+   private void processContextInitializers(ClassLoader classLoader, SerializationContext serCtx) {
       Collection<ProtostreamSerializationContextInitializer> initializers =
             ServiceFinder.load(ProtostreamSerializationContextInitializer.class, classLoader);
 
       initializers.forEach(initCtx -> {
          try {
-            initCtx.init(metadataManager.getSerializationContext());
+            initCtx.init(serCtx);
          } catch (Exception e) {
             throw log.errorInitializingSerCtx(e);
          }
