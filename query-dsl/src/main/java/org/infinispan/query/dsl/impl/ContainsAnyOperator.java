@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class ContainsAnyOperator extends OperatorAndArgument<Object> {
 
-   protected ContainsAnyOperator(AttributeCondition parentCondition, Object argument) {
+   ContainsAnyOperator(AttributeCondition parentCondition, Object argument) {
       super(parentCondition, argument);
    }
 

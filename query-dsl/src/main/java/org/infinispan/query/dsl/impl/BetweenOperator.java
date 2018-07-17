@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class BetweenOperator extends OperatorAndArgument<ValueRange> {
 
-   protected BetweenOperator(AttributeCondition parentCondition, ValueRange argument) {
+   BetweenOperator(AttributeCondition parentCondition, ValueRange argument) {
       super(parentCondition, argument);
    }
 

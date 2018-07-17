@@ -153,9 +153,10 @@ public abstract class BaseQuery implements Query {
 
    /**
     * Reset internal state after pagination or query parameters are modified. This is needed to ensure the next
-    * execution of the query uses the new values.
+    * execution of the query uses the new values. Subclasses must override accordingly.
     */
-   public abstract void resetQuery();
+   public void resetQuery() {
+   }
 
    /**
     * Ensure all named parameters have non-null values.

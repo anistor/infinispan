@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class GtOperator extends OperatorAndArgument<Object> {
 
-   protected GtOperator(AttributeCondition parentCondition, Object argument) {
+   GtOperator(AttributeCondition parentCondition, Object argument) {
       super(parentCondition, argument);
    }
 

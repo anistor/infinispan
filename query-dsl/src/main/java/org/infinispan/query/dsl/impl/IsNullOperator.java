@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class IsNullOperator extends OperatorAndArgument<Void> {
 
-   protected IsNullOperator(AttributeCondition parentCondition) {
+   IsNullOperator(AttributeCondition parentCondition) {
       super(parentCondition, null);
    }
 

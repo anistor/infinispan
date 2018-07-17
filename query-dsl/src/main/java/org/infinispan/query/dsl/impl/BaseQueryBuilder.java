@@ -2,10 +2,12 @@ package org.infinispan.query.dsl.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.infinispan.query.dsl.Expression;
 import org.infinispan.query.dsl.FilterConditionContext;
 import org.infinispan.query.dsl.FilterConditionEndContext;
+import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryBuilder;
 import org.infinispan.query.dsl.QueryFactory;
 import org.infinispan.query.dsl.SortOrder;
@@ -19,6 +21,8 @@ import org.jboss.logging.Logger;
 public abstract class BaseQueryBuilder implements QueryBuilder, Visitable {
 
    private static final Log log = Logger.getMessageLogger(Log.class, BaseQueryBuilder.class.getName());
+
+   private static final boolean trace = log.isTraceEnabled();
 
    protected final QueryFactory queryFactory;
 
@@ -232,7 +236,23 @@ public abstract class BaseQueryBuilder implements QueryBuilder, Visitable {
    }
 
    @Override
-   public <ReturnType> ReturnType accept(Visitor<ReturnType> visitor) {
+   public final <ReturnType> ReturnType accept(Visitor<ReturnType> visitor) {
       return visitor.visit(this);
+   }
+
+   @Override
+   public final Query build() {
+      QueryStringCreator generator = makeQueryStringCreator();
+      String queryString = accept(generator);
+      if (trace) {
+         log.tracef("Query string : %s", queryString);
+      }
+      return makeQuery(queryString, generator.getNamedParameters());
+   }
+
+   protected abstract Query makeQuery(String queryString, Map<String, Object> namedParameters);
+
+   protected QueryStringCreator makeQueryStringCreator() {
+      return new QueryStringCreator();
    }
 }

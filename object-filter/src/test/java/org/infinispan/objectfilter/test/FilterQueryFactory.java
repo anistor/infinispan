@@ -3,17 +3,13 @@ package org.infinispan.objectfilter.test;
 import java.util.List;
 import java.util.Map;
 
-import org.infinispan.objectfilter.impl.logging.Log;
 import org.infinispan.protostream.SerializationContext;
 import org.infinispan.query.dsl.IndexedQueryMode;
 import org.infinispan.query.dsl.Query;
 import org.infinispan.query.dsl.QueryBuilder;
-import org.infinispan.query.dsl.QueryFactory;
 import org.infinispan.query.dsl.impl.BaseQuery;
 import org.infinispan.query.dsl.impl.BaseQueryBuilder;
 import org.infinispan.query.dsl.impl.BaseQueryFactory;
-import org.infinispan.query.dsl.impl.QueryStringCreator;
-import org.jboss.logging.Logger;
 
 /**
  * @author anistor@redhat.com
@@ -33,57 +29,48 @@ final class FilterQueryFactory extends BaseQueryFactory {
 
    @Override
    public Query create(String queryString) {
-      return new FilterQuery(this, queryString, null, null, -1, -1);
+      return new FilterQuery(queryString, null, null, -1, -1);
    }
 
    @Override
    public Query create(String queryString, IndexedQueryMode queryMode) {
-      return new FilterQuery(this, queryString, null, null, -1, -1);
+      return new FilterQuery(queryString, null, null, -1, -1);
    }
 
    @Override
    public QueryBuilder from(Class<?> entityType) {
       if (serializationContext != null) {
+         // we just check that the type is known to be marshallable
          serializationContext.getMarshaller(entityType);
       }
-      return new FilterQueryBuilder(this, entityType.getName());
+      return new FilterQueryBuilder(entityType.getName());
    }
 
    @Override
    public QueryBuilder from(String entityType) {
       if (serializationContext != null) {
+         // we just check that the type is known to be marshallable
          serializationContext.getMarshaller(entityType);
       }
-      return new FilterQueryBuilder(this, entityType);
+      return new FilterQueryBuilder(entityType);
    }
 
-   private static final class FilterQueryBuilder extends BaseQueryBuilder {
+   private final class FilterQueryBuilder extends BaseQueryBuilder {
 
-      private static final Log log = Logger.getMessageLogger(Log.class, FilterQueryBuilder.class.getName());
-
-      FilterQueryBuilder(FilterQueryFactory queryFactory, String rootType) {
-         super(queryFactory, rootType);
+      FilterQueryBuilder(String rootType) {
+         super(FilterQueryFactory.this, rootType);
       }
 
       @Override
-      public Query build() {
-         QueryStringCreator generator = new QueryStringCreator();
-         String queryString = accept(generator);
-         if (log.isTraceEnabled()) {
-            log.tracef("Query string : %s", queryString);
-         }
-         return new FilterQuery(queryFactory, queryString, generator.getNamedParameters(), getProjectionPaths(), startOffset, maxResults);
+      protected Query makeQuery(String queryString, Map<String, Object> namedParameters) {
+         return new FilterQuery(queryString, namedParameters, getProjectionPaths(), startOffset, maxResults);
       }
    }
 
-   private static final class FilterQuery extends BaseQuery {
+   private final class FilterQuery extends BaseQuery {
 
-      FilterQuery(QueryFactory queryFactory, String queryString, Map<String, Object> namedParameters, String[] projection, long startOffset, int maxResults) {
-         super(queryFactory, queryString, namedParameters, projection, startOffset, maxResults);
-      }
-
-      @Override
-      public void resetQuery() {
+      FilterQuery(String queryString, Map<String, Object> namedParameters, String[] projection, long startOffset, int maxResults) {
+         super(FilterQueryFactory.this, queryString, namedParameters, projection, startOffset, maxResults);
       }
 
       // TODO [anistor] need to rethink the dsl Query/QueryBuilder interfaces to accommodate the filtering scenario ...

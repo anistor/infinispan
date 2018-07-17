@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class LtOperator extends OperatorAndArgument<Object> {
 
-   protected LtOperator(AttributeCondition parentCondition, Object argument) {
+   LtOperator(AttributeCondition parentCondition, Object argument) {
       super(parentCondition, argument);
    }
 

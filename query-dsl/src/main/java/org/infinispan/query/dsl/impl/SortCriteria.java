@@ -38,9 +38,6 @@ final class SortCriteria {
 
    @Override
    public String toString() {
-      return "SortCriteria{" +
-            "pathExpression='" + pathExpression + '\'' +
-            ", sortOrder=" + sortOrder +
-            '}';
+      return "SortCriteria('" + pathExpression + "', " + sortOrder + ')';
    }
 }

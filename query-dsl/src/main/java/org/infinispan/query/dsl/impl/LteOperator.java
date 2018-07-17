@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class LteOperator extends OperatorAndArgument<Object> {
 
-   protected LteOperator(AttributeCondition parentCondition, Object argument) {
+   LteOperator(AttributeCondition parentCondition, Object argument) {
       super(parentCondition, argument);
    }
 

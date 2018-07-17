@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class EqOperator extends OperatorAndArgument<Object> {
 
-   protected EqOperator(AttributeCondition parentCondition, Object argument) {
+   EqOperator(AttributeCondition parentCondition, Object argument) {
       super(parentCondition, argument);
    }
 

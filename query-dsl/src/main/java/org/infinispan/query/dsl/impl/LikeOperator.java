@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class LikeOperator extends OperatorAndArgument<String> {
 
-   protected LikeOperator(AttributeCondition parentCondition, String argument) {
+   LikeOperator(AttributeCondition parentCondition, String argument) {
       super(parentCondition, argument);
    }
 

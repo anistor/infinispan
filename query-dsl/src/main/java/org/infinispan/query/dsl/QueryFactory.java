@@ -1,9 +1,9 @@
 package org.infinispan.query.dsl;
 
 /**
- * Factory for query DSL objects. Query construction starts here, usually by invoking the {@link #from} method which
- * returns a {@link QueryBuilder} capable of constructing {@link Query} objects. The other methods are use for creating
- * sub-conditions.
+ * Factory for query objects. Query construction starts here, usually by invoking the {@link #from} method which returns
+ * a {@link QueryBuilder} capable of constructing {@link Query} objects or by directly invoking {@link #create} with a
+ * query string. The other methods are use for creating sub-conditions.
  *
  * @author anistor@redhat.com
  * @since 6.0
@@ -19,6 +19,7 @@ public interface QueryFactory {
 
    /**
     * Creates a Query based on an Ickle query string
+    *
     * @param queryMode the {@link IndexedQueryMode} dictating the indexed query execution mode if applicable.
     */
    Query create(String queryString, IndexedQueryMode queryMode);

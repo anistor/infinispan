@@ -1,5 +1,8 @@
 package org.infinispan.query.dsl.impl;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.infinispan.query.dsl.impl.logging.Log;
 import org.jboss.logging.Logger;
 
@@ -27,11 +30,26 @@ abstract class OperatorAndArgument<ArgumentType> implements Visitable {
       return attributeCondition;
    }
 
+   /**
+    * Returns the argument.
+    */
    ArgumentType getArgument() {
       return argument;
    }
 
-   //todo [anistor] must also validate that the argument type is compatible with the operator
+   /**
+    * 'Casts' the argument to an Iterable if possible.
+    */
+   Iterable<?> getIterableArgument() {
+      if (argument instanceof Collection) {
+         return (Collection) argument;
+      } else if (argument instanceof Object[]) {
+         return Arrays.asList((Object[]) argument);
+      }
+      throw log.expectingCollectionOrArray();
+   }
+
+   //todo [anistor] would be nice to also validate that the argument type is compatible with the operator for early error detection, but this will be detected during query string parsing anyway
    void validate() {
       if (argument == null) {
          throw log.argumentCannotBeNull();
@@ -40,6 +58,6 @@ abstract class OperatorAndArgument<ArgumentType> implements Visitable {
 
    @Override
    public String toString() {
-      return getClass().getSimpleName() + "{argument=" + argument + '}';
+      return getClass().getSimpleName() + "(" + argument + ')';
    }
 }

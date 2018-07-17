@@ -6,7 +6,7 @@ package org.infinispan.query.dsl.impl;
  */
 class InOperator extends OperatorAndArgument<Object> {
 
-   protected InOperator(AttributeCondition parentCondition, Object argument) {
+   InOperator(AttributeCondition parentCondition, Object argument) {
       super(parentCondition, argument);
    }
 

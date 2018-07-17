@@ -3,7 +3,6 @@ package org.infinispan.query.dsl.impl;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +14,8 @@ import org.infinispan.query.dsl.impl.logging.Log;
 import org.jboss.logging.Logger;
 
 /**
- * Generates an Ickle query to satisfy the condition created with the builder.
+ * Generates an Ickle query string to satisfy the condition created with the DSL builder. This instance is not stateless
+ * not threadsafe and should not be reused.
  *
  * @author anistor@redhat.com
  * @since 6.0
@@ -277,22 +277,13 @@ public class QueryStringCreator implements Visitor<String> {
    }
 
    private String generateMultipleBooleanCondition(OperatorAndArgument operator, String booleanOperator, Class<? extends BooleanCondition> expectedParentClass) {
-      Object argument = operator.getArgument();
-      Collection values;
-      if (argument instanceof Collection) {
-         values = (Collection) argument;
-      } else if (argument instanceof Object[]) {
-         values = Arrays.asList((Object[]) argument);
-      } else {
-         throw log.expectingCollectionOrArray();
-      }
       StringBuilder sb = new StringBuilder();
       boolean wrap = parentIsNotOfClass(operator.getAttributeCondition(), expectedParentClass);
       if (wrap) {
          sb.append('(');
       }
       boolean isFirst = true;
-      for (Object value : values) {
+      for (Object value : operator.getIterableArgument()) {
          if (isFirst) {
             isFirst = false;
          } else {

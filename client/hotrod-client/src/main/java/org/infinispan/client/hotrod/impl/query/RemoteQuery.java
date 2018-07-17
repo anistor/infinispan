@@ -126,6 +126,7 @@ public final class RemoteQuery extends BaseQuery {
    public String toString() {
       return "RemoteQuery{" +
             "queryString=" + queryString +
+            ", indexedQueryMode=" + indexedQueryMode +
             ", namedParameters=" + namedParameters +
             ", startOffset=" + startOffset +
             ", maxResults=" + maxResults +

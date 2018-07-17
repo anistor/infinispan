@@ -147,15 +147,13 @@ final class AttributeCondition extends BaseCondition implements FilterConditionE
 
    @Override
    public AttributeCondition includeLower(boolean includeLower) {
-      ValueRange valueRange = (ValueRange) operatorAndArgument.getArgument();
-      valueRange.setIncludeLower(includeLower);
+      ((BetweenOperator) operatorAndArgument).getArgument().setIncludeLower(includeLower);
       return this;
    }
 
    @Override
    public AttributeCondition includeUpper(boolean includeUpper) {
-      ValueRange valueRange = (ValueRange) operatorAndArgument.getArgument();
-      valueRange.setIncludeUpper(includeUpper);
+      ((BetweenOperator) operatorAndArgument).getArgument().setIncludeUpper(includeUpper);
       return this;
    }
 
@@ -176,10 +174,6 @@ final class AttributeCondition extends BaseCondition implements FilterConditionE
 
    @Override
    public String toString() {
-      return "AttributeCondition{" +
-            "isNegated=" + isNegated +
-            ", expression='" + expression + '\'' +
-            ", operatorAndArgument=" + operatorAndArgument +
-            '}';
+      return "AttributeCondition(" + (isNegated ? "!, " : "") + "'" + expression  + "', " + operatorAndArgument + ')';
    }
 }
