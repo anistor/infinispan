@@ -10,14 +10,18 @@ import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 import org.infinispan.protostream.annotations.ProtoTypeId;
 import org.infinispan.protostream.descriptors.Descriptor;
+import org.infinispan.query.Transformable;
 
 /**
- * This is used to wrap binary values encoded with Protocol Buffers. {@link ProtobufValueWrapperFieldBridge} is used as
- * a class bridge to allow indexing of the binary payload.
+ * This is used to wrap binary values encoded with Protocol Buffers into something usable for Infinispan in order to
+ * offer indexing. {@link ProtobufValueWrapperFieldBridge} is used as a Hibernate Search class bridge to allow indexing
+ * of the binary payload and {@link ProtobufValueWrapperTransformer} is used to stringify this for Lucene when used as a
+ * key.
  *
  * @author anistor@redhat.com
  * @since 6.0
  */
+@Transformable(transformer = ProtobufValueWrapperTransformer.class)
 @ProtoTypeId(ProtoStreamTypeIds.PROTOBUF_VALUE_WRAPPER)
 public final class ProtobufValueWrapper implements WrappedBytes {
 
