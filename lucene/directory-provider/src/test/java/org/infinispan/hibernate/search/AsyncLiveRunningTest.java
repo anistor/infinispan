@@ -27,7 +27,7 @@ import org.junit.Test;
  * In this test we initially start a master node which will stay alive for the full test duration and constantly
  * indexing new entities, focusing on the configurtion using async indexing and exclusive lock ownership on the primary
  * node.
- * <p/>
+ * <p>
  * After that we add and remove additional new nodes, still making more index changes checking that each node is always
  * able to see changes - although the purpose here is to test async indexing so the visibility on these changes might
  * be slightly delayed.

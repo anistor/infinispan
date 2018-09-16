@@ -58,7 +58,7 @@ public class SimpleFacetingTest extends SingleCacheManagerTest {
       cache.clear();
    }
 
-   public void testFaceting() throws Exception {
+   public void testFaceting() {
       QueryBuilder queryBuilder = qf.buildQueryBuilderForClass(Car.class).get();
 
       FacetingRequest request = queryBuilder.facet()

@@ -15,7 +15,7 @@ import org.hibernate.search.annotations.Store;
 @Indexed
 public class DynamicPropertiesEntity {
 
-   private final Map<String,String> properties = new HashMap<String, String>();
+   private final Map<String,String> properties = new HashMap<>();
 
    @Field(analyze=Analyze.YES, store=Store.YES)
    @FieldBridge(impl=StringKeyedMapBridge.class)

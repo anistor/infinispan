@@ -20,7 +20,7 @@ import org.infinispan.hibernate.cache.v51.impl.BaseTransactionalDataRegion;
 import javax.transaction.TransactionManager;
 
 /**
- * Natural ID cache region
+ * Natural ID cache region.
  *
  * @author Strong Liu &lt;stliu@hibernate.org&gt;
  * @author Galder Zamarreño
