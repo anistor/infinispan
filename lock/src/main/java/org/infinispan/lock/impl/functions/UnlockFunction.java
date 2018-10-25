@@ -19,15 +19,12 @@ import org.infinispan.lock.impl.log.Log;
 
 /**
  * Function that allows to unlock the lock, if it's not already released.
- * <p>
- * <p>
  * <ul>
  *    <li>If the requestor is not the owner, the lock won't be released. </li>
  *    <li>If the requestId is null, this value does not affect the unlock </li>
  *    <li>If the requestId is not null, the lock will be released only if the requestId and the owner match</li>
  *    <li>If lock is already released, nothing happens</li>
  * </ul>
- * <p>
  *
  * @author Katia Aresti, karesti@redhat.com
  * @since 9.2

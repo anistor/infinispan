@@ -41,13 +41,13 @@ import org.infinispan.remoting.transport.Address;
  * Implements {@link ClusteredLock} interface.
  * <p>
  * This lock implements a non reentrant where the ownership is {@link OwnershipLevel#NODE}.
- * <p>
- * <h2>Non reentrant lock, Owner Node</h2> <lu> <li>Originator of the requests is the {@link Address} of the {@link
+ *
+ * <h2>Non reentrant lock, Owner Node</h2> <ul> <li>Originator of the requests is the {@link Address} of the {@link
  * org.infinispan.manager.EmbeddedCacheManager}</li> <li>When a lock is acquired by a Node, it cannot be re-acquired,
  * even by the actual node til the lock is released.</li> <li>The lock can be unlocked only by the lock owner, in this
  * case the node</li> <li>lock method does not expire til the lock is acquired, so this can cause thread starvation in
- * the actual implementation</li> </lu>
- * <p>
+ * the actual implementation</li> </ul>
+ *
  * <h2>Partition handling</h2>
  *
  * @author Katia Aresti, karesti@redhat.com

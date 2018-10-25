@@ -21,7 +21,6 @@ import org.infinispan.util.logging.LogFactory;
 
 /**
  * Cache store interceptor specific for the distribution and replication cache modes.
- * <p>
  * <p>If the cache store is shared, only the primary owner of the key writes to the cache store.</p>
  * <p>If the cache store is not shared, every owner of a key writes to the cache store.</p>
  * <p>In non-tx caches, if the originator is an owner, the command is executed there twice. The first time,

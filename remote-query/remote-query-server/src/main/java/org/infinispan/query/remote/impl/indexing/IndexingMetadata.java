@@ -14,16 +14,15 @@ import org.infinispan.protostream.descriptors.Option;
 /**
  * All fields of Protobuf types are indexed and stored by default if no indexing annotations are present. This behaviour
  * exists only for compatibility with first release of remote query; it is deprecated and will be removed in Infinispan
- * 10.0 (the lack of annotations on your message/field definition will imply no indexing support in this future release,
- * but you will still be able to perform unindexed query). Indexing all fields is sometimes acceptable but it can become
- * a performance problem if there are many or very large fields. To avoid such problems Infinispan allows and encourages
- * you to specify which fields to index and store by means of two annotations ({@literal @}Indexed and
- * {@literal @}Field) that behave very similarly to the identically named Hibernate Search annotations and which can be
- * directly added to your Protobuf schema files in the documentation comments of your message type definitions as
- * demonstrated in the example below:
+ * 10.0 (the lack of indexing annotations on your message definition will imply no indexing will be performed by
+ * Infinispan in this future release, but you will still be able to perform unindexed query). Indexing all fields is
+ * sometimes acceptable but it can become a performance problem if there are many or very large fields. To avoid such
+ * problems Infinispan allows and encourages you need to specify which fields to index and store by means of two
+ * annotations ({@code @Indexed} and {@code @Field}) that behave very similarly to the identically named Hibernate
+ * Search annotations and which can be directly added to your Protobuf schema files in the documentation comments of
+ * your message type definitions as demonstrated in the example below:
  * <p>
  * <b>Example:</b>
- * <p>
  * <pre>
  * /**
  *  * This message type is indexed, but not all of its fields are.
@@ -44,7 +43,7 @@ import org.infinispan.protostream.descriptors.Option;
  *     *{@literal /}
  *     optional string author = 2;
  *
- *     /** @Field(index=Index.NO, store=Store.YES) *{@literal /}
+ *     /** {@literal @}Field(index=Index.NO, store=Store.YES) *{@literal /}
  *     optional bool isRead = 3;
  *
  *     /** This field is not annotated, so it is neither indexed nor stored. *{@literal /}
@@ -53,35 +52,36 @@ import org.infinispan.protostream.descriptors.Option;
  * </pre>
  * <p>
  * Documentation annotations can be added after the human-readable text on the last lines of the documentation comment
- * that precedes the element to be annotated (a message type definition or a field definition).
- * The syntax for defining these pseudo-annotations is identical to the one use by the Java language.
+ * that precedes the element to be annotated (a message type definition or a field definition). The syntax for defining
+ * these pseudo-annotations is identical to the one use by the Java language.
  * <p>
- * The '{@literal @}Indexed' annotation applies to message types only, has a boolean value that defaults to 'true', so
- * '{@literal @}Indexed' is equivalent to '{@literal @}Indexed(true)'. The presence of this annotation indicates the
- * type is to be indexed and we intend to selectively specify which of the fields of this message type are to be indexed.
- * '@Indexed(false)' turns off indexing for this type so the eventual '@Field' annotations present at field level
- * will be ignored. The usage of '@Indexed(false)' is temporarily allowed, it is currently deprecated, and will no
- * longer be supported in Infinispan 10.0 in which the only official way to turn off indexing for a type will be to not
- * annotate it at all. The {@literal @}Indexed annotation also has an optional 'index' attribute which allow you to
- * specify the name of the index for this message type. If left unspecified it defaults to the fully qualified type name.
+ * The {@code @Indexed} annotation applies to message types only, has a boolean value that defaults to 'true', so
+ * {@code @Indexed} is equivalent to {@code @Indexed(true)}. The presence of this annotation indicates the type is to be
+ * indexed and we intend to selectively specify which of the fields of this message type are to be indexed.
+ * {@code @Indexed(false)} turns off indexing for this type so the eventual {@code @Field} annotations present at field
+ * level will be ignored. The usage of {@code @Indexed(false)} is temporarily allowed, it is currently deprecated, and
+ * will no longer be supported in Infinispan 10.0 in which the only official way to turn off indexing for a type will be
+ * to not annotate it at all. The {@code @Indexed} annotation also has an optional 'index' attribute which allows you to
+ * specify the name of the index for this message type. If left unspecified it defaults to the fully qualified type
+ * name.
  * <p>
- * The '{@literal @}Field' annotation applies to fields only and has three attributes, 'index', 'store' and 'analyze',
- * which default to {@literal @}Field(index=Index.YES, store=Store.NO, analyze=Analyze.NO). The 'index' attribute
- * indicates whether the field will be indexed, so it can be used for indexed queries, while the 'store' attribute
- * indicates whether the field value is to be stored in the index too, so it becomes useable for projections. The
- * analyze attribute control analysis. Analyzing must be turned on in order to use the field in full-text searches.
+ * The {@code @Field} annotation applies to fields only and has three attributes, 'index', 'store' and 'analyze', which
+ * default to {@code @Field(index=Index.YES, store=Store.NO, analyze=Analyze.NO)}. The 'index' attribute indicates
+ * whether the field will be indexed, so it can be used for indexed queries, while the 'store' attribute indicates
+ * whether the field value is to be stored in the index too, so it becomes usable for projections. The analyze attribute
+ * control analysis. Analyzing must be turned on in order to use the field in full-text searches.
  * <p>
- * The '{@literal @}Analyzer' annotation applies to messages and fields and allows you to specify which analyzer to use
- * if analysis was enabled. If has a single attribute name 'definition' which must contain a valid analyzer definition
+ * The {@code @Analyzer} annotation applies to messages and fields and allows you to specify which analyzer to use if
+ * analysis was enabled. It has a single attribute name, 'definition', which must contain a valid analyzer definition
  * name specified as a String.
  * <p>
  * <b>NOTE:</b>
  * <ul>
- * <li>1. The {@literal @}Field and {@literal @}Analyzer annotations have effect only if the containing message
- * type was annotated as '{@literal @}Indexed' or '{@literal @}Indexed(true)', otherwise they are ignored.
+ * <li>1. The {@code @Field} and {@code @Analyzer} annotations have effect only if the containing message
+ * type was annotated as {@code @Indexed} or {@code @Indexed(true)}, otherwise they are ignored.
  * </li>
  * <li>2. Unindexed fields can still be queried in non-indexed mode or with hybrid queries.</li>
- * <ul/>
+ * </ul>
  *
  * @author anistor@redhat.com
  * @since 7.0

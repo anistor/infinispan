@@ -8,7 +8,6 @@ import org.infinispan.remoting.transport.Address;
  * The service is instantiated through through one of the factory methods from {@link org.infinispan.affinity.KeyAffinityServiceFactory}.
  * <p>
  * Sample usage:
- * <p>
  * <pre><code>
  *    Cache&lt;String, Long&gt; cache = getDistributedCache();
  *    KeyAffinityService&lt;String&gt; service = KeyAffinityServiceFactory.newKeyAffinityService(cache, 100);

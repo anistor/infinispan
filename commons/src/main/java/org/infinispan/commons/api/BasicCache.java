@@ -20,13 +20,12 @@ import java.util.function.Function;
  * <p>
  * Also, like many {@link ConcurrentMap} implementations, BasicCache does not support the use of <tt>null</tt> keys or
  * values.
- * <p>
  * <h3>Unsupported operations</h3>
- * <p>{@link #containsValue(Object)}</p>
- *
- * Please see the <a href="http://www.jboss.org/infinispan/docs">Infinispan documentation</a> and/or the <a
- * href="https://docs.jboss.org/author/display/ISPN/Getting+Started+Guide#GettingStartedGuide-5minutetutorial">5 Minute Usage Tutorial</a> for more details.
+ * {@link #containsValue(Object)}
  * <p>
+ * Please see the <a href="http://www.jboss.org/infinispan/docs">Infinispan documentation</a> and/or the
+ * <a href="http://infinispan.org/docs/dev/getting_started/getting_started.html">5 Minute Usage Tutorial</a> for more
+ * details.
  *
  * @author Mircea.Markus@jboss.com
  * @author Manik Surtani
@@ -35,8 +34,8 @@ import java.util.function.Function;
  *
  * @see org.infinispan.manager.CacheContainer
  * @see DefaultCacheManager
- * @see <a href="http://www.jboss.org/infinispan/docs">Infinispan documentation</a>
- * @see <a href="http://www.jboss.org/community/wiki/5minutetutorialonInfinispan">5 Minute Usage Tutorial</a>
+ * @see <a href="http://infinispan.org/documentation/">Infinispan documentation</a>
+ * @see <a href="http://infinispan.org/docs/dev/getting_started/getting_started.html">5 Minute Usage Tutorial</a>
  *
  * @since 5.1
  */

@@ -34,7 +34,7 @@ public interface ReplicableCommand {
    /**
     * Invoke the command synchronously.
     * <p>
-    * <p>This method is optional. Unless your command never blocks, please implement {@link #invokeAsync()} instead.</p>
+    * This method is optional. Unless your command never blocks, please implement {@link #invokeAsync()} instead.
     *
     * @since 9.0
     */

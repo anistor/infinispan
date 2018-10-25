@@ -9,10 +9,10 @@ import org.infinispan.remoting.transport.Address;
 
 /**
  * Factory for {@link ConsistentHash} instances.
- *
- * <p>We say a consistent hash {@code ch} is <em>balanced</em> iif {@code rebalance(ch).equals(ch)}.
- *
- * <p>The consistent hashes created by {@link #create(Hash, int, int, List, Map)} must be balanced,
+ * <p>
+ * We say a consistent hash {@code ch} is <em>balanced</em> iif {@code rebalance(ch).equals(ch)}.
+ * <p>
+ * The consistent hashes created by {@link #create(Hash, int, int, List, Map)} must be balanced,
  * but the ones created by {@link #updateMembers(ConsistentHash, List, Map)} and
  * {@link #union(ConsistentHash, ConsistentHash)} will likely be unbalanced.
  *

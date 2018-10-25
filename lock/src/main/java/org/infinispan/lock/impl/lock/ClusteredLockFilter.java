@@ -14,7 +14,6 @@ import org.infinispan.lock.impl.externalizers.ExternalizerIds;
 
 /**
  * This listener is used to monitor lock state changes.
- * More about listeners {@see http://infinispan.org/docs/stable/user_guide/user_guide.html#cache_level_notifications}
  *
  * @author Katia Aresti, karesti@redhat.com
  * @since 9.2

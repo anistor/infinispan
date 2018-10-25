@@ -48,14 +48,14 @@ public abstract class InfinispanRequest {
       return Optional.ofNullable(cacheName);
    }
 
-   /***
+   /**
     * @return HTTP/2.0 Stream Id.
     */
    Optional<String> getStreamId() {
       return streamId;
    }
 
-   /***
+   /**
     * @return Netty request.
     */
    public FullHttpRequest getRawRequest() {
@@ -69,7 +69,7 @@ public abstract class InfinispanRequest {
       return nettyChannelContext;
    }
 
-   /***
+   /**
     * @return <code>true</code> if client wishes to perform request asynchronously.
     */
    public Optional<Boolean> getUseAsync() {
@@ -80,7 +80,7 @@ public abstract class InfinispanRequest {
       return Optional.empty();
    }
 
-   /***
+   /**
     * @return <code>Accepts</code> header value.
     */
    public Optional<String> getAcceptContentType() {
@@ -92,28 +92,28 @@ public abstract class InfinispanRequest {
             .orElse(DEFAULT_KEY_CONTENT_TYPE);
    }
 
-   /***
+   /**
     * @return <code>Content-Type</code> header value.
     */
    public Optional<String> getContentType() {
       return Optional.ofNullable(request.headers().get("Content-type"));
    }
 
-   /***
+   /**
     * @return <code>Authorization</code> header value.
     */
    public Optional<String> getAuthorization() {
       return Optional.ofNullable(request.headers().get(HttpHeaderNames.AUTHORIZATION));
    }
 
-   /***
+   /**
     * @return Netty context.
     */
    public String getContext() {
       return context;
    }
 
-   /***
+   /**
     * @return request's payload.
     */
    public Optional<byte[]> data() {
