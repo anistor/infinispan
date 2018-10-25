@@ -423,6 +423,20 @@
                   (http://maven.apache.org/plugins-archives/maven-javadoc-plugin-2.10.3/javadoc-mojo.html#detectOfflineLinks)
                   -->
                   <detectOfflineLinks>false</detectOfflineLinks>
+                  <doclint>all,-missing</doclint>
+                  <author>true</author>
+                  <failOnError>false</failOnError>
+                  <failOnWarnings>false</failOnWarnings>
+                  <tags>
+                     <tag>
+                        <name>private</name>
+                        <placement>X</placement>
+                     </tag>
+                     <tag>
+                        <name>public</name>
+                        <placement>X</placement>
+                     </tag>
+                  </tags>
                </configuration>
             </plugin>
             <plugin>
