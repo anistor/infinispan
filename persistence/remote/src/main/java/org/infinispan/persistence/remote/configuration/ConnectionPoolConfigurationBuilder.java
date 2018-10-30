@@ -70,7 +70,7 @@ public class ConnectionPoolConfigurationBuilder extends AbstractRemoteStoreConfi
    /**
     * Sets a target value for the minimum number of idle connections (per server) that should always
     * be available. If this parameter is set to a positive number and timeBetweenEvictionRunsMillis
-    * > 0, each time the idle connection eviction thread runs, it will try to create enough idle
+    * &gt; 0, each time the idle connection eviction thread runs, it will try to create enough idle
     * instances so that there will be minIdle idle instances available for each server. The default
     * setting for this parameter is 1.
     */
@@ -93,7 +93,7 @@ public class ConnectionPoolConfigurationBuilder extends AbstractRemoteStoreConfi
     * Specifies the minimum amount of time that an connection may sit idle in the pool before it is
     * eligible for eviction due to idle time. When non-positive, no connection will be dropped from
     * the pool due to idle time alone. This setting has no effect unless
-    * timeBetweenEvictionRunsMillis > 0. The default setting for this parameter is 1800000(30
+    * timeBetweenEvictionRunsMillis &gt; 0. The default setting for this parameter is 1800000(30
     * minutes).
     */
    public ConnectionPoolConfigurationBuilder minEvictableIdleTime(long minEvictableIdleTime) {
@@ -104,7 +104,7 @@ public class ConnectionPoolConfigurationBuilder extends AbstractRemoteStoreConfi
    /**
     * Indicates whether or not idle connections should be validated by sending an TCP packet to the
     * server, during idle connection eviction runs. Connections that fail to validate will be
-    * dropped from the pool. This setting has no effect unless timeBetweenEvictionRunsMillis > 0.
+    * dropped from the pool. This setting has no effect unless timeBetweenEvictionRunsMillis &gt; 0.
     * The default setting for this parameter is true.
     */
    public ConnectionPoolConfigurationBuilder testWhileIdle(boolean testWhileIdle) {
