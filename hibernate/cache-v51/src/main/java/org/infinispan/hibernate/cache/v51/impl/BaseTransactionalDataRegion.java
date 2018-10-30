@@ -75,10 +75,11 @@ public abstract class BaseTransactionalDataRegion
 	}
 
 	/**
-	 * Base transactional region constructor
-	 *  @param cache instance to store transactional data
+	 * Base transactional region constructor.
+	 *
+	 * @param cache instance to store transactional data
 	 * @param name of the transactional region
-	 * @param transactionManager
+	 * @param transactionManager the transaction manager
 	 * @param metadata for the transactional region
 	 * @param factory for the transactional region
 	 * @param cacheKeysFactory factory for cache keys

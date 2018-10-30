@@ -6,18 +6,18 @@
  */
 package org.infinispan.hibernate.cache.v51.naturalid;
 
+import javax.transaction.TransactionManager;
+
 import org.hibernate.cache.CacheException;
-import org.infinispan.hibernate.cache.commons.access.AccessDelegate;
 import org.hibernate.cache.spi.CacheDataDescription;
 import org.hibernate.cache.spi.CacheKeysFactory;
 import org.hibernate.cache.spi.NaturalIdRegion;
 import org.hibernate.cache.spi.access.AccessType;
 import org.hibernate.cache.spi.access.NaturalIdRegionAccessStrategy;
 import org.infinispan.AdvancedCache;
+import org.infinispan.hibernate.cache.commons.access.AccessDelegate;
 import org.infinispan.hibernate.cache.v51.InfinispanRegionFactory;
 import org.infinispan.hibernate.cache.v51.impl.BaseTransactionalDataRegion;
-
-import javax.transaction.TransactionManager;
 
 /**
  * Natural ID cache region
@@ -30,9 +30,10 @@ public class NaturalIdRegionImpl extends BaseTransactionalDataRegion
 
 	/**
 	 * Constructor for the natural id region.
-	 *  @param cache instance to store natural ids
+	 *
+	 * @param cache instance to store natural ids
 	 * @param name of natural id region
-	 * @param transactionManager
+	 * @param transactionManager the transaction manager
 	 * @param metadata for the natural id region
 	 * @param factory for the natural id region
 	 * @param cacheKeysFactory factory for cache keys

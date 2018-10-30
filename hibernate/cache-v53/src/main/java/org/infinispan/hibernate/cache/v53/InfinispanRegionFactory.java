@@ -79,10 +79,11 @@ public class InfinispanRegionFactory implements RegionFactory, TimeSource, Infin
    private static final InfinispanMessageLogger log = InfinispanMessageLogger.Provider.getLog( InfinispanRegionFactory.class );
 
    /**
-    * Defines custom mapping for regionName -> cacheName and also DataType.key -> cacheName
+    * Defines custom mapping for regionName to cacheName and also DataType.key to cacheName
     * (for the case that you want to change the cache configuration for whole type)
     */
    protected final Map<String, String> baseConfigurations = new HashMap<>();
+
    /**
     * Defines configuration properties applied on top of configuration set in any file, by regionName or DataType.key
     */
@@ -104,7 +105,7 @@ public class InfinispanRegionFactory implements RegionFactory, TimeSource, Infin
    }
 
    /**
-    * Create a new instance using conifguration properties in <code>props</code>.
+    * Create a new instance using configuration properties in <code>props</code>.
     *
     * @param props Environmental properties; currently unused.
     */
