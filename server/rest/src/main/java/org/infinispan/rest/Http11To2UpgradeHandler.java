@@ -93,7 +93,7 @@ public class Http11To2UpgradeHandler extends ApplicationProtocolNegotiationHandl
    }
 
    /**
-    * Creates a handler for HTTP/1.1 -> HTTP/2 upgrade
+    * Creates a handler for HTTP/1.1 to HTTP/2 upgrade.
     *
     * @return new instance of {@link HttpToHttp2ConnectionHandler}.
     */
