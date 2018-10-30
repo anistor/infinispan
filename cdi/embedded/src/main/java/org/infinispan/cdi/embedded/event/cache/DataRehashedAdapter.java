@@ -24,7 +24,7 @@ import org.infinispan.remoting.transport.Address;
 public class DataRehashedAdapter<K, V> extends AbstractAdapter<DataRehashedEvent<K, V>> {
 
    /**
-    * CDI does not allow parametrized type for events (like <code><K,V></code>). This is why this wrapped needs to be
+    * CDI does not allow parametrized type for events (like {@code <K, V>}). This is why this wrapped needs to be
     * introduced. To ensure type safety, this needs to be linked to parent class (in other words this class can not
     * be static).
     */
@@ -130,7 +130,7 @@ public class DataRehashedAdapter<K, V> extends AbstractAdapter<DataRehashedEvent
    };
 
    /**
-    * Events which will be selected (including generic type information (<code><?, ?></code>).
+    * Events which will be selected (including generic type information ({@code <?, ?>}).
     */
    @SuppressWarnings("serial")
    public static final TypeLiteral<DataRehashedEvent<?, ?>> WILDCARD_TYPE = new TypeLiteral<DataRehashedEvent<?, ?>>() {
