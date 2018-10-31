@@ -11,7 +11,7 @@ import java.util.function.Function;
 import org.infinispan.client.hotrod.RemoteCache;
 
 /**
- * Purpose: keep all delegating and unsupported methods in one place -> readability.
+ * Purpose: keep all delegating and unsupported methods in one place for readability.
  *
  * @author Mircea.Markus@jboss.com
  * @since 4.1
