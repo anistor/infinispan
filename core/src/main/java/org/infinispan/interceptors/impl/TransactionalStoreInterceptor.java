@@ -18,8 +18,9 @@ import org.infinispan.interceptors.DDAsyncInterceptor;
 import org.infinispan.persistence.manager.PersistenceManager;
 
 /**
- * An interceptor which ensures that writes to an underlying transactional store are prepared->committed/rolledback as part
- * of the 2PC, therefore ensuring that the cache and transactional store(s) remain consistent.
+ * An interceptor which ensures that writes to an underlying transactional store are prepared and then
+ * committed/rolledback as part of the 2PC, therefore ensuring that the cache and transactional store(s) remain
+ * consistent.
  *
  * @author Ryan Emerson
  * @since 9.0
