@@ -63,7 +63,7 @@ public interface ScriptingManager {
    /**
     * Retrieves names of all available scripts.
     *
-    * @return {@link Set<String>} containing names of available scripts.
+    * @return {@link Set Set&lt;String&gt;} containing names of available scripts.
     */
    Set<String> getScriptNames();
 }
