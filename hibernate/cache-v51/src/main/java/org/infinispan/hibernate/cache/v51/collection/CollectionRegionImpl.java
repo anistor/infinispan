@@ -6,18 +6,18 @@
  */
 package org.infinispan.hibernate.cache.v51.collection;
 
+import javax.transaction.TransactionManager;
+
 import org.hibernate.cache.CacheException;
-import org.infinispan.hibernate.cache.commons.access.AccessDelegate;
 import org.hibernate.cache.spi.CacheDataDescription;
 import org.hibernate.cache.spi.CacheKeysFactory;
 import org.hibernate.cache.spi.CollectionRegion;
 import org.hibernate.cache.spi.access.AccessType;
 import org.hibernate.cache.spi.access.CollectionRegionAccessStrategy;
 import org.infinispan.AdvancedCache;
+import org.infinispan.hibernate.cache.commons.access.AccessDelegate;
 import org.infinispan.hibernate.cache.v51.InfinispanRegionFactory;
 import org.infinispan.hibernate.cache.v51.impl.BaseTransactionalDataRegion;
-
-import javax.transaction.TransactionManager;
 
 /**
  * Collection region implementation
@@ -27,7 +27,7 @@ import javax.transaction.TransactionManager;
  * @since 3.5
  */
 public class CollectionRegionImpl extends BaseTransactionalDataRegion implements CollectionRegion {
-	
+
 	/**
 	 * Construct a collection region.
 	 *
