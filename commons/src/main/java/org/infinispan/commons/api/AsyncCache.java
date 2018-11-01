@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * AsyncCache. This interface is implemented by caches which support asynchronous variants of the various
- * put/get/remove/clear/replace/putAll methods
+ * put/get/remove/clear/replace/putAll methods.
  *
  * Note that these methods only really make sense if you are using a clustered cache.  I.e., when used in LOCAL mode,
  * these "async" operations offer no benefit whatsoever.  These methods, such as {@link #putAsync(Object, Object)}
@@ -33,13 +33,11 @@ import java.util.function.Function;
  * completed successfully, but you have the added benefit that the three calls could happen in parallel.  This is
  * especially advantageous if the cache uses distribution and the three keys map to different cache instances in the
  * cluster.
- * <p/>
+ * <p>
  * Also, the use of async operations when within a transaction return your local value only, as expected.  A
  * {@link CompletableFuture} is still returned though for API consistency.
  *
  * These methods can have benefit over their sync versions even in LOCAL mode.
- *
- * <p/>
  *
  * @author Mircea Markus
  * @author Manik Surtani
