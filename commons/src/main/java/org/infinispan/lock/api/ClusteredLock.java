@@ -7,11 +7,10 @@ import org.infinispan.lock.exception.ClusteredLockException;
 
 /**
  * ClusteredLock is a data structure used for concurrent programming between Infinispan instances in cluster mode.
- *
- * A typical usage idiom for {@link ClusteredLock#lock} will be :
- *
+ * <p>
+ * A typical usage idiom for {@link #lock} will be :
+ * <pre>
  * {@code
- *
  *  ClusteredLock lock = clm.get("lock");
  *  lock.lock()
  *  .thenRun(() ->
@@ -20,13 +19,13 @@ import org.infinispan.lock.exception.ClusteredLockException;
  *          } finally {
  *              return lock.unlock();
  *          }
- *  )
+ *  );
  * }
+ * </pre>
  *
- * A typical usage idiom for {@link ClusteredLock#tryLock} will be :
- *
+ * A typical usage idiom for {@link #tryLock} will be :
+ * <pre>
  * {@code
- *
  *  lock.tryLock()
  *    .thenCompose(result -> {
  *       if (result) {
@@ -40,6 +39,7 @@ import org.infinispan.lock.exception.ClusteredLockException;
  *       }
  *    });
  * }
+ * </pre>
  *
  * @author Katia Aresti, karesti@redhat.com
  * @see <a href="http://infinispan.org/documentation/">Infinispan documentation</a>
@@ -94,7 +94,8 @@ public interface ClusteredLock {
    CompletableFuture<Void> unlock();
 
    /**
-    * Returns a {@link CompletableFuture<Boolean>} holding {@code true} when the lock is locked and {@code false} when the lock is released.
+    * Returns a {@link CompletableFuture CompletableFuture&lt;Boolean&gt;} holding {@code true} when the lock is locked
+    * and {@code false} when the lock is released.
     *
     * @return a {@link CompletableFuture} holding a {@link Boolean}
     * @throws ClusteredLockException when the lock does not exist
@@ -102,8 +103,8 @@ public interface ClusteredLock {
    CompletableFuture<Boolean> isLocked();
 
    /**
-    * Returns a {@link CompletableFuture<Boolean>} holding {@code true} when the lock is owned by the caller and
-    * {@code false} when the lock is owned by someone else or it's released.
+    * Returns a {@link CompletableFuture CompletableFuture&lt;Boolean&gt;} holding {@code true} when the lock is owned
+    * by the caller and {@code false} when the lock is owned by someone else or it's released.
     *
     * @return a {@link CompletableFuture} holding a {@link Boolean}
     * @throws ClusteredLockException when the lock does not exist
