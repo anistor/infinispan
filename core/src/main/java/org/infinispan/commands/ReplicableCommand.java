@@ -22,9 +22,8 @@ public interface ReplicableCommand {
    /**
     * Invoke the command asynchronously.
     * <p>
-    * <p>This method replaces {@link #perform(InvocationContext)} for remote execution.
+    * This method replaces {@link #perform(InvocationContext)} for remote execution.
     * The default implementation and {@link #perform(InvocationContext)} will be removed in future versions.
-    * </p>
     *
     * @since 9.0
     */
@@ -35,7 +34,7 @@ public interface ReplicableCommand {
    /**
     * Invoke the command synchronously.
     * <p>
-    * <p>This method is optional. Unless your command never blocks, please implement {@link #invokeAsync()} instead.</p>
+    * This method is optional. Unless your command never blocks, please implement {@link #invokeAsync()} instead.
     *
     * @since 9.0
     */
@@ -89,7 +88,7 @@ public interface ReplicableCommand {
    /**
     * If true, the command is processed asynchronously in a thread provided by an Infinispan thread pool. Otherwise,
     * the command is processed directly in the JGroups thread.
-    * <p/>
+    * <p>
     * This feature allows to avoid keep a JGroups thread busy that can originate discard of messages and
     * retransmissions. So, the commands that can block (waiting for some state, acquiring locks, etc.) should return
     * true.
