@@ -15,7 +15,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
  * Allows an {@link AnnotatedMethod} to be injected using the CDI type safe
  * resolution rules.
  * </p>
- * <p/>
  * <p>
  * {@link ParameterValueRedefiner} allows the default value to be overridden by
  * the caller of
@@ -34,11 +33,9 @@ public class InjectableMethod<X> {
     /**
      * Instantiate a new {@link InjectableMethod}.
      *
-     * @param method      the method which will be injected upon a call to
-     *                    {@link #invoke(Object, CreationalContext)}
-     * @param bean        the bean which defines the injectable method
-     * @param beanManager the {@link BeanManager} to use to obtain the parameter
-     *                    values
+     * @param method        the method which will be injected upon a call to {@link #invoke(Object, CreationalContext)}
+     * @param declaringBean the bean which defines the injectable method
+     * @param beanManager   the {@link BeanManager} to use to obtain the parameter values
      */
     public InjectableMethod(AnnotatedMethod<X> method, Bean<?> declaringBean, BeanManager beanManager) {
         this(method, Beans.createInjectionPoints(method, declaringBean, beanManager), beanManager);
@@ -56,7 +53,7 @@ public class InjectableMethod<X> {
      */
     public InjectableMethod(AnnotatedMethod<X> method, Collection<InjectionPoint> parameters, BeanManager beanManager) {
         this.method = method;
-        this.parameters = new ArrayList<InjectionPoint>(parameters);
+        this.parameters = new ArrayList<>(parameters);
         this.beanManager = beanManager;
     }
 
@@ -139,7 +136,7 @@ public class InjectableMethod<X> {
      *                                     method fails.
      */
     public <T> T invoke(Object receiver, CreationalContext<T> creationalContext, ParameterValueRedefiner redefinition) {
-        List<Object> parameterValues = new ArrayList<Object>();
+        List<Object> parameterValues = new ArrayList<>();
         for (int i = 0; i < getParameters().size(); i++) {
             if (redefinition != null) {
                 ParameterValueRedefiner.ParameterValue value = new ParameterValueRedefiner.ParameterValue(i, getParameters().get(i), getBeanManager());
