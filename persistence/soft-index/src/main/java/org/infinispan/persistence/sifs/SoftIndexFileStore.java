@@ -31,8 +31,8 @@ import io.reactivex.Flowable;
 /**
  * Local file-based cache store, optimized for write-through use with strong consistency guarantees
  * (ability to flush disk operations before returning from the store call).
- *
- * * DESIGN:
+ * <p>
+ * DESIGN:
  * There are three threads operating in the cache-store:
  * - LogAppender:  Requests to store entries are passed to the LogAppender thread
  *                 via queue, then the requestor threads wait until LogAppender notifies
@@ -86,7 +86,7 @@ import io.reactivex.Flowable;
  *     ( key_part_length (2 bytes), key_part, left_child_index_node_offset (8 bytes))+,
  *     right_child_index_node_offset (8 bytes)
  *
- * In memory, for every child a SoftReference<IndexNode> is held. When this reference
+ * In memory, for every child a {@code SoftReference<IndexNode>} is held. When this reference
  * is empty (but the offset in file is set), any reader may load the reference using
  * double-locking pattern (synchronized over the reference itself). The entry is never
  * loaded by multiple threads in parallel and even may block other threads trying to
