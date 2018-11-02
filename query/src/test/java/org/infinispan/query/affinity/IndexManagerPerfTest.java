@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 /**
  * Performance test for AffinityIndexManager/InfinispanIndexManager with different configurations. Accepts the following parameters and values:
- * <p>
  * <ul>
  * <li>indexmanager: The FQCN of the IndexManager to test. Default is {@link BaseAffinityTest#DEFAULT_INDEX_MANAGER}</li>
  * <li>index_nodes: The number of nodes in the cluster that will write data with cache.put. Default is {@link BaseAffinityTest#DEFAULT_INDEXING_NODES}</li>
@@ -54,7 +53,6 @@ import org.testng.annotations.Test;
  * </pre>
  * Test the {@link AffinityIndexManager} with 2 nodes doing queries with 2 threads each, 1M entries, async worker, custom logfile:
  * <pre>
- *
  * mvn -Ptest-stress -Dquery_nodes=2 -Dquery_threads_per_node=2 -Dentries=1000000 -Dquery_type=TERM -Dworker=async \
  * -Dlog4j.configurationFile=log4j2.xml
  * -Dtest=IndexManagerPerfTest#testQueryOnly verify

@@ -40,8 +40,8 @@ import org.testng.annotations.Test;
  * DURATION_MS and a number of threads similar to the use case you're interested in: results might
  * vary on the number of threads because of the lock differences. This is not meant as a benchmark
  * but used to detect regressions.
- *
- * This requires Lucene > 2.9.1 or Lucene > 3.0.0 because of
+ * <p>
+ * This requires Lucene &gt; 2.9.1 or Lucene &gt; 3.0.0 because of
  * https://issues.apache.org/jira/browse/LUCENE-2095
  *
  * @author Sanne Grinovero
